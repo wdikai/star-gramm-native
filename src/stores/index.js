@@ -1,11 +1,11 @@
 /** @format */
 
 import PostFeed from './postFeed';
-import Users from './users';
+import { UserStore } from './users';
 
 export default class RootStore {
     constructor() {
-        this.feed = new PostFeed(this);
-        this.users = new Users(this);
+        this.feedStore = new PostFeed(this);
+        this.userStore = new UserStore(this);
     }
 }

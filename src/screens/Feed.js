@@ -9,7 +9,7 @@ import Post from '../components/Post';
 
 type Props = {};
 
-@inject(stores => ({ feedStore: stores.root.feed }))
+@inject(stores => ({ feedStore: stores.root.feedStore }))
 @observer
 export default class Feed extends Component<Props> {
     componentWillMount() {

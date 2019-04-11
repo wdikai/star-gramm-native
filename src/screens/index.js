@@ -23,10 +23,10 @@ const appNavigator = createSwitchNavigator(
                         Home,
                         Users,
                         Feed,
-                        Profile: User,
+                        Profile: { screen: User },
                     },
                     {
-                        initialRouteName: 'Feed',
+                        initialRouteName: 'Users',
                     }
                 ),
                 User,

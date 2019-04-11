@@ -7,21 +7,22 @@ import { inject, observer } from 'mobx-react/native';
 import styles from '../styles/styles';
 import UserListItem from '../components/UserListItem';
 
-@inject(stores => ({ usersStore: stores.root.users }))
+@inject(stores => ({ userStore: stores.root.userStore }))
 @observer
 export default class Users extends Component<Props> {
     componentWillMount() {
-        this.props.usersStore.fetchUsers();
+        this.props.userStore.fetchUsers(0);
     }
 
     render() {
+        const store = this.props.userStore;
         return (
             <View style={styles.container}>
                 <FlatList
-                    data={this.props.usersStore.users}
-                    refreshing={this.props.usersStore.isLoading}
-                    onRefresh={() => this.props.usersStore.fetchUsers(true)}
-                    onEndReached={() => this.props.usersStore.fetchUsers()}
+                    data={store.users}
+                    refreshing={store.isLoading}
+                    onRefresh={() => store.fetchUsers(0)}
+                    onEndReached={() => store.fetchUsers(store.offset)}
                     onEndReachedThreshold={1}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) => <UserListItem user={item} />}

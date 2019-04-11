@@ -34,9 +34,10 @@ const innerStyles = StyleSheet.create({
 });
 
 @observer
-@inject(stores => ({ usersStore: stores.root.users }))
+@inject(stores => ({ userStore: stores.root.userStore }))
 export default class User extends Component {
     static navigationOptions({ navigation }) {
+        console.log('User navigationOptions');
         return {
             title: navigation.getParam('stackTitle', 'Profile'),
         };
@@ -44,24 +45,25 @@ export default class User extends Component {
 
     async componentWillMount() {
         const userId = this.props.navigation.getParam('userId');
-        await this.props.usersStore.fetchUser(userId);
-        if (userId) {
-            this.props.navigation.setParams({
-                stackTitle: this.props.usersStore.currentUser.name,
-            });
-        }
+        await this.props.userStore.fetchUser(userId);
+        this.props.navigation.setParams({
+            stackTitle: this.props.userStore.currentUser
+                ? this.props.userStore.currentUser.name
+                : null,
+        });
+        this.forceUpdate();
     }
 
     render() {
-        const usersStore = this.props.usersStore;
+        const userStore = this.props.userStore;
         return (
             <View style={styles.container}>
-                {usersStore.currentUser && (
+                {userStore.currentUser && (
                     <View style={[innerStyles.userSection]}>
                         <View style={[styles.row, styles.spaceBetween]}>
                             <FitImage
                                 style={innerStyles.avatar}
-                                source={{ uri: usersStore.currentUser.avatar }}
+                                source={{ uri: userStore.currentUser.avatar }}
                             />
                             <View style={[styles.column, styles.center]}>
                                 <View style={[styles.row]}>
@@ -73,7 +75,7 @@ export default class User extends Component {
                                         ]}>
                                         <Text>
                                             {
-                                                usersStore.currentUser
+                                                userStore.currentUser
                                                     .countFollowers
                                             }
                                         </Text>
@@ -88,7 +90,7 @@ export default class User extends Component {
                                         ]}>
                                         <Text>
                                             {
-                                                usersStore.currentUser
+                                                userStore.currentUser
                                                     .countFollowings
                                             }
                                         </Text>
@@ -109,8 +111,8 @@ export default class User extends Component {
                         </View>
 
                         <View style={[styles.column]}>
-                            <Text>{usersStore.currentUser.name}</Text>
-                            <Text>{usersStore.currentUser.bio}</Text>
+                            <Text>{userStore.currentUser.name}</Text>
+                            <Text>{userStore.currentUser.bio}</Text>
                         </View>
                     </View>
                 )}
