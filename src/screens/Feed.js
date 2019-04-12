@@ -5,7 +5,7 @@ import { View, FlatList } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 
 import styles from '../styles/styles';
-import Post from '../components/Post';
+import PostListItem from '../components/PostListItem';
 
 type Props = {};
 
@@ -22,11 +22,15 @@ export default class Feed extends Component<Props> {
                 <FlatList
                     data={this.props.feedStore.posts}
                     refreshing={this.props.feedStore.isLoading}
-                    onRefresh={() => this.props.feedStore.fetchPosts(true)}
-                    onEndReached={() => this.props.feedStore.fetchPosts()}
+                    onRefresh={() => this.props.feedStore.fetchPosts()}
+                    onEndReached={() =>
+                        this.props.feedStore.fetchPosts(
+                            this.props.feedStore.offset
+                        )
+                    }
                     onEndReachedThreshold={1}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={({ item }) => <Post post={item} />}
+                    renderItem={({ item }) => <PostListItem post={item} />}
                 />
             </View>
         );

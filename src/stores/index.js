@@ -1,6 +1,6 @@
 /** @format */
 
-import { PostsStore } from './feed';
+import { PostsStore } from './posts';
 import { UsersStore } from './users';
 import { ProfileStore } from './profile';
 import { UserService } from '../services/UserService';

@@ -3,7 +3,14 @@
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { Component } from 'react';
-import { Image, StyleSheet, View, ActivityIndicator } from 'react-native';
+import {
+    Image,
+    ImageBackground,
+    StyleSheet,
+    View,
+    ActivityIndicator,
+} from 'react-native';
+import { observer } from 'mobx-react/native';
 
 type FitImageProps = {
     originalHeight?: number,
@@ -29,6 +36,7 @@ const styles = StyleSheet.create({
     },
 });
 
+@observer
 export default class FitImage extends Component<FitImageProps, FitImageState> {
     constructor(props) {
         super(props);
@@ -61,7 +69,7 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
         }
 
         this.state = {
-            isLoading: false,
+            isLoading: true,
             layoutWidth: 0,
             originalHeight: 0,
             originalWidth: 0,
@@ -85,27 +93,27 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
     render() {
         return (
             <View>
-                {this.state.isLoading && (
-                    <ActivityIndicator
-                        style={[
-                            this.style,
-                            this.sizeStyle,
-                            { height: this.getHeight() },
-                            styles.container,
-                        ]}
-                    />
-                )}
-                <Image
+                <ImageBackground
                     {...this.props}
                     onLayout={event => this.onLayout(event)}
+                    onLoadEnd={() => this.setState({ isLoading: false })}
                     source={this.props.source}
                     style={[
                         this.style,
                         this.sizeStyle,
                         { height: this.getHeight() },
                         styles.container,
-                    ]}
-                />
+                    ]}>
+                    {this.state.isLoading && this.renderLoader()}
+                </ImageBackground>
+            </View>
+        );
+    }
+
+    renderLoader() {
+        return (
+            <View style={[this.style, this.sizeStyle, styles.container]}>
+                <ActivityIndicator />
             </View>
         );
     }
@@ -162,7 +170,7 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
 
                 this.setOriginalSize(originalWidth, originalHeight);
             },
-            () => null
+            error => console.log('Image', url, error)
         );
     }
 

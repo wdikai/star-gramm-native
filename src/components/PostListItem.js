@@ -18,6 +18,7 @@ const localStyles = StyleSheet.create({
         borderRadius: 25,
         width: 50,
         height: 50,
+        overflow: 'hidden',
     },
     cardHeader: {
         fontSize: 16,
@@ -43,32 +44,36 @@ const localStyles = StyleSheet.create({
     },
 });
 
-function Post(props) {
-    const description = !props.post.description ? null : (
+function PostListItem({ navigation, post }) {
+    const onPress = openProfile(navigation, post.creator);
+    const description = !post.description ? null : (
         <View style={[localStyles.cardFooter, styles.row]}>
-            <Text> {props.post.description} </Text>
+            <Text> {post.description} </Text>
         </View>
     );
-
-    const onPress = openProfile(props.navigation, props.post.creator);
 
     return (
         <View style={[localStyles.card, styles.column]}>
             <View style={[styles.row, localStyles.cardHeader]}>
                 <TouchableOpacity onPress={onPress}>
                     <FitImage
-                        style={[styles.col4, localStyles.avatar]}
-                        source={{ uri: props.post.creator.avatar }}
+                        style={[localStyles.avatar]}
+                        source={{ uri: post.creator.avatar }}
                     />
                 </TouchableOpacity>
                 <Text style={[styles.col8]} onPress={onPress}>
-                    {props.post.creator.name}
+                    {post.creator.name}
                 </Text>
             </View>
-            <FitImage source={{ uri: props.post.image }} />
+
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Post', { postId: post.id })}
+                style={{ minHeight: 310 }}>
+                <FitImage source={{ uri: post.image }} />
+            </TouchableOpacity>
             {description}
         </View>
     );
 }
 
-export default withNavigation(Post);
+export default withNavigation(PostListItem);

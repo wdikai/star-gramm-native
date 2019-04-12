@@ -1,6 +1,6 @@
 /** @format */
 
-import { observable } from 'mobx/lib/mobx';
+import { action, observable } from 'mobx/lib/mobx';
 
 export default class Post {
     @observable id;
@@ -13,5 +13,13 @@ export default class Post {
         this.creator = options.creator;
         this.description = options.description;
         this.image = options.image;
+    }
+
+    @action
+    update(data) {
+        this.id = data.id;
+        this.creator = data.creator;
+        this.description = data.description;
+        this.image = data.image;
     }
 }

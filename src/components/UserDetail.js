@@ -23,6 +23,7 @@ const innerStyles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
+        overflow: 'hidden',
     },
     editButton: {
         width: 150,
@@ -35,6 +36,7 @@ const innerStyles = StyleSheet.create({
 });
 
 @observer
+@withNavigation
 class UserDetail extends Component {
     render() {
         let actions = null;
@@ -95,4 +97,4 @@ class UserDetail extends Component {
     }
 }
 
-export default withNavigation(UserDetail);
+export default UserDetail;

@@ -11,29 +11,28 @@ import Home from './Home';
 import User from './User';
 import Users from './Users';
 import Feed from './Feed';
+import Post from './Post';
 import Login from './Login';
 import Profile from './Profile';
 import Splash from './Splash';
 
 const appNavigator = createSwitchNavigator(
     {
-        App: createStackNavigator(
+        Main: createBottomTabNavigator(
             {
-                Main: createBottomTabNavigator(
-                    {
-                        Home,
-                        Users,
-                        Feed,
-                        Profile,
-                    },
-                    {
-                        initialRouteName: 'Users',
-                    }
+                Home,
+                Users: createStackNavigator(
+                    { Users, User, Post },
+                    { initialRouteName: 'Users' }
                 ),
-                User,
+                Feed: createStackNavigator(
+                    { Feed, User, Post },
+                    { initialRouteName: 'Feed' }
+                ),
+                Profile,
             },
             {
-                initialRouteName: 'Main',
+                initialRouteName: 'Feed',
             }
         ),
         Splash,

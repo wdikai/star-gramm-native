@@ -15,6 +15,7 @@ const localStyles = StyleSheet.create({
         borderRadius: 25,
         width: 50,
         height: 50,
+        overflow: 'hidden',
     },
     line: {
         fontSize: 16,

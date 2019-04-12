@@ -24,7 +24,6 @@ export default class User extends Component {
                 ? this.props.userStore.currentUser.name
                 : null,
         });
-        this.forceUpdate();
     }
 
     render() {
