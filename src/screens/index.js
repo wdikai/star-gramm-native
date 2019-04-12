@@ -12,6 +12,7 @@ import User from './User';
 import Users from './Users';
 import Feed from './Feed';
 import Login from './Login';
+import Profile from './Profile';
 import Splash from './Splash';
 
 const appNavigator = createSwitchNavigator(
@@ -23,7 +24,7 @@ const appNavigator = createSwitchNavigator(
                         Home,
                         Users,
                         Feed,
-                        Profile: { screen: User },
+                        Profile,
                     },
                     {
                         initialRouteName: 'Users',

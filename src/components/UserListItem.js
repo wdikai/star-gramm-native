@@ -6,7 +6,7 @@ import { withNavigation } from 'react-navigation';
 
 import styles from '../styles/styles';
 import FitImage from './FitImage';
-import User from '../screens/User';
+import FollowButton from './FollowButton';
 import openProfile from '../actions/openProfile';
 
 const localStyles = StyleSheet.create({
@@ -18,6 +18,7 @@ const localStyles = StyleSheet.create({
     },
     line: {
         fontSize: 16,
+        justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
 
@@ -40,15 +41,20 @@ function UserListItem({ navigation, user }) {
 
     return (
         <View style={[styles.row, localStyles.line]}>
-            <TouchableOpacity onPress={onPress}>
-                <FitImage
-                    style={[styles.col4, localStyles.avatar]}
-                    source={{ uri: user.avatar }}
-                />
-            </TouchableOpacity>
-            <Text style={[styles.col8]} onPress={onPress}>
-                {user.name}
-            </Text>
+            <View style={[styles.row, styles.center, styles.col4]}>
+                <TouchableOpacity onPress={onPress}>
+                    <FitImage
+                        style={[styles.col4, localStyles.avatar]}
+                        source={{ uri: user.avatar }}
+                    />
+                </TouchableOpacity>
+                <Text style={[styles.col8]} onPress={onPress}>
+                    {user.name}
+                </Text>
+            </View>
+            <View>
+                <FollowButton user={user} />
+            </View>
         </View>
     );
 }

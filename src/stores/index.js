@@ -1,11 +1,18 @@
 /** @format */
 
-import PostFeed from './postFeed';
-import { UserStore } from './users';
+import { PostsStore } from './feed';
+import { UsersStore } from './users';
+import { ProfileStore } from './profile';
+import { UserService } from '../services/UserService';
+import { PostService } from '../services/PostService';
 
 export default class RootStore {
     constructor() {
-        this.feedStore = new PostFeed(this);
-        this.userStore = new UserStore(this);
+        const userService = new UserService();
+        const postService = new PostService();
+
+        this.profileStore = new ProfileStore({ userService });
+        this.feedStore = new PostsStore({ postService });
+        this.userStore = new UsersStore({ userService });
     }
 }

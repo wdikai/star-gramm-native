@@ -2,6 +2,8 @@
 
 import { action, observable } from 'mobx/lib/mobx';
 
+const timeout = time => new Promise(resolve => setTimeout(resolve, time));
+
 export default class User {
     @observable id;
     @observable name;
@@ -18,6 +20,7 @@ export default class User {
         this.countFollowers = options.countFollowers || 0;
         this.countFollowings = options.countFollowings || 0;
         this.bio = options.bio || '';
+        this.isFollow = options.isFollow || false;
     }
 
     @action
@@ -32,7 +35,7 @@ export default class User {
     @action
     async follow() {
         await timeout(1000);
-        this.isFollow = true;
-        this.countFollowers++;
+        this.isFollow = !this.isFollow;
+        this.countFollowers += this.isFollow ? 1 : -1;
     }
 }
