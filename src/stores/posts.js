@@ -2,7 +2,7 @@
 
 import { observable, action } from 'mobx';
 import Post from '../models/post';
-import { computed, runInAction } from 'mobx/lib/mobx';
+import { computed } from 'mobx/lib/mobx';
 
 export class PostsStore {
     @observable posts = [];
@@ -23,13 +23,12 @@ export class PostsStore {
         this.isLoading = true;
         this.currentPost = this.posts.find(user => user.id === id);
         const response = await this.postService.getPost(id);
-        runInAction(() => {
-            if (this.currentPost) {
-                this.currentPost.update(response);
-            }
 
+        if (this.currentPost) {
+            this.currentPost.update(response);
+        } else {
             this.currentPost = new Post(response);
-        });
+        }
 
         this.isLoading = false;
     }

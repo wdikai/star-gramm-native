@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
     },
 });
 
-@observer
 export default class FitImage extends Component<FitImageProps, FitImageState> {
     constructor(props) {
         super(props);

@@ -7,8 +7,8 @@ import { inject, observer } from 'mobx-react/native';
 import UserDetail from '../components/UserDetail';
 import styles from '../styles/styles';
 
-@observer
 @inject(stores => ({ profileStore: stores.root.profileStore }))
+@observer
 export default class Profile extends Component {
     static navigationOptions({ navigation }) {
         return {
@@ -18,7 +18,6 @@ export default class Profile extends Component {
 
     async componentWillMount() {
         await this.props.profileStore.fetchProfile();
-        this.forceUpdate();
     }
 
     render() {

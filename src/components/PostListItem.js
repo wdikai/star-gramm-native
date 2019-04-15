@@ -46,11 +46,6 @@ const localStyles = StyleSheet.create({
 
 function PostListItem({ navigation, post }) {
     const onPress = openProfile(navigation, post.creator);
-    const description = !post.description ? null : (
-        <View style={[localStyles.cardFooter, styles.row]}>
-            <Text> {post.description} </Text>
-        </View>
-    );
 
     return (
         <View style={[localStyles.card, styles.column]}>
@@ -71,7 +66,11 @@ function PostListItem({ navigation, post }) {
                 style={{ minHeight: 310 }}>
                 <FitImage source={{ uri: post.image }} />
             </TouchableOpacity>
-            {description}
+            {post.description && (
+                <View style={[localStyles.cardFooter, styles.row]}>
+                    <Text> {post.description} </Text>
+                </View>
+            )}
         </View>
     );
 }

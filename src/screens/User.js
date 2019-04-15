@@ -7,8 +7,8 @@ import { inject, observer } from 'mobx-react/native';
 import styles from '../styles/styles';
 import UserDetail from '../components/UserDetail';
 
-@observer
 @inject(stores => ({ userStore: stores.root.userStore }))
+@observer
 export default class User extends Component {
     static navigationOptions({ navigation }) {
         return {

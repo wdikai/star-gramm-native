@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
-import { reaction } from 'mobx';
 
 import styles from '../styles/styles';
 import openProfile from '../actions/openProfile';
@@ -45,8 +44,8 @@ const localStyles = StyleSheet.create({
     },
 });
 
-@observer
 @inject(stores => ({ feedStore: stores.root.feedStore }))
+@observer
 export default class Post extends Component {
     static navigationOptions({ navigation }) {
         return {
@@ -54,22 +53,19 @@ export default class Post extends Component {
         };
     }
 
-    async componentWillMount() {
+    componentWillMount() {
         const postId = this.props.navigation.getParam('postId');
         this.props.feedStore.fetchPost(postId);
     }
 
     render() {
-        const post = this.props.feedStore.currentPost;
-        let description, onPress;
+        const feedStore = this.props.feedStore;
+        let onPress;
+        if (!this.props.feedStore.currentPost) return null;
 
-        if (!post) return null;
-
-        onPress = openProfile(this.props.navigation, post.creator);
-        description = !post.description ? null : (
-            <View style={[localStyles.cardFooter, styles.row]}>
-                <Text> {post.description} </Text>
-            </View>
+        onPress = openProfile(
+            this.props.navigation,
+            feedStore.currentPost.creator
         );
 
         return (
@@ -79,19 +75,25 @@ export default class Post extends Component {
                         <TouchableOpacity onPress={onPress}>
                             <FitImage
                                 style={[localStyles.avatar]}
-                                source={{ uri: post.creator.avatar }}
+                                source={{
+                                    uri: feedStore.currentPost.creator.avatar,
+                                }}
                             />
                         </TouchableOpacity>
                         <Text style={[styles.col8]} onPress={onPress}>
-                            {post.creator.name}
+                            {feedStore.currentPost.creator.name}
                         </Text>
                     </View>
 
                     <FitImage
-                        source={{ uri: post.image }}
+                        source={{ uri: feedStore.currentPost.image }}
                         style={{ minHeight: 310 }}
                     />
-                    {description}
+                    {feedStore.currentPost.description && (
+                        <View style={[localStyles.cardFooter, styles.row]}>
+                            <Text> {feedStore.currentPost.description} </Text>
+                        </View>
+                    )}
                 </View>
             </View>
         );
