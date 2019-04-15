@@ -10,7 +10,6 @@ import {
     View,
     ActivityIndicator,
 } from 'react-native';
-import { observer } from 'mobx-react/native';
 
 type FitImageProps = {
     originalHeight?: number,
@@ -168,8 +167,9 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
                 }
 
                 this.setOriginalSize(originalWidth, originalHeight);
+                console.log('Image uri', uri);
             },
-            error => console.log('Image', url, error)
+            error => console.log('Image', uri, error)
         );
     }
 

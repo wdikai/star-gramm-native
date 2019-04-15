@@ -5925,6 +5925,13 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-native-camera@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-2.4.0.tgz#1f3c6fc2afcc556b4f2b7b6a166f86e4a88ca95d"
+  integrity sha512-BPPcZEqnEyVjn9bwnuu9hrLErAb3OCyL9+mU/uOoejmIf/6GpdJdbGAkpP6kPDiBWo3b1ki34b7Zccv6Y3MFBA==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-fbsdk@^0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/react-native-fbsdk/-/react-native-fbsdk-0.8.0.tgz#4ee95ebb7be4b00fa9f871ca594f068c9782c7de"

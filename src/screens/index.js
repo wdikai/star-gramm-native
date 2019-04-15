@@ -7,6 +7,8 @@ import {
     createStackNavigator,
 } from 'react-navigation';
 
+import Camera from './Camera';
+import PhotoPreview from './PhotoPreview';
 import Home from './Home';
 import User from './User';
 import Users from './Users';
@@ -21,6 +23,21 @@ const appNavigator = createSwitchNavigator(
         Main: createBottomTabNavigator(
             {
                 Home,
+                Camera: {
+                    screen: createStackNavigator(
+                        {
+                            Camera,
+                            PhotoPreview,
+                        },
+                        {
+                            initialRouteName: 'Camera',
+                            headerMode: 'none',
+                        }
+                    ),
+                    navigationOptions: {
+                        tabBarVisible: false,
+                    },
+                },
                 Users: createStackNavigator(
                     { Users, User, Post },
                     { initialRouteName: 'Users' }

@@ -7,11 +7,9 @@ import { inject, observer } from 'mobx-react/native';
 import styles from '../styles/styles';
 import PostListItem from '../components/PostListItem';
 
-type Props = {};
-
 @inject(stores => ({ feedStore: stores.root.feedStore }))
 @observer
-export default class Feed extends Component<Props> {
+export default class Feed extends Component {
     componentWillMount() {
         this.props.feedStore.fetchPosts();
     }

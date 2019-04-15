@@ -3,6 +3,7 @@ package com.stargramm;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import org.reactnative.camera.RNCameraPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -35,10 +36,11 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new AsyncStoragePackage(),
-            new RNGestureHandlerPackage(),
-          new FBSDKPackage(mCallbackManager)
+        new MainReactPackage(),
+        new RNCameraPackage(),
+        new AsyncStoragePackage(),
+        new RNGestureHandlerPackage(),
+        new FBSDKPackage(mCallbackManager)
       );
     }
 

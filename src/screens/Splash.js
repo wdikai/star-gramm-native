@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { ActivityIndicator, StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import PhotoPreview from './PhotoPreview';
 
 export default class Splash extends Component {
     constructor(props) {
@@ -12,7 +13,9 @@ export default class Splash extends Component {
 
     async checkAuth() {
         const userToken = await AsyncStorage.getItem('userToken');
-        this.props.navigation.navigate(userToken ? 'Main' : 'Login');
+        this.props.navigation.navigate(userToken ? 'PhotoPreview' : 'Login', {
+            uri: 'https://via.placeholder.com/640X480/79eec1',
+        });
     }
 
     render() {
