@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 import styles from '../styles/styles';
-import FitImage from '../components/FitImage';
+import Cropper from '../components/Cropper';
 
 const localStyles = StyleSheet.create({
     backButton: {
@@ -20,14 +20,15 @@ const localStyles = StyleSheet.create({
     },
     preview: {
         paddingTop: 50,
-        backgroundColor: 'black',
+        // backgroundColor: 'black',
     },
 });
 
 export default class PhotoPreview extends Component {
-    state = {
-        uri: null,
-    };
+    constructor(props) {
+        super(props);
+        this.state = { uri: null };
+    }
 
     componentWillMount() {
         this.setState({ uri: this.props.navigation.getParam('uri', null) });
@@ -37,9 +38,7 @@ export default class PhotoPreview extends Component {
         return (
             <View
                 style={[styles.container, styles.center, localStyles.preview]}>
-                <View style={styles.container}>
-                    <FitImage source={{ uri: this.state.uri }} />
-                </View>
+                <Cropper source={this.state.uri} />
                 <View style={localStyles.backButton}>
                     <TouchableOpacity
                         onPress={() => this.props.navigation.goBack()}>

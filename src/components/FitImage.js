@@ -174,10 +174,16 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
     }
 
     setOriginalSize(originalWidth, originalHeight) {
-        this.setState({
-            originalHeight,
-            originalWidth,
-        });
+        this.setState({ originalHeight, originalWidth });
+        setTimeout(
+            () =>
+                this.props.onResize &&
+                this.props.onResize({
+                    ...this.state,
+                    layoutHeight: this.getHeight(),
+                }),
+            1000
+        );
     }
 }
 
