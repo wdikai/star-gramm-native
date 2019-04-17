@@ -13,7 +13,6 @@ import {
 
 import styles from '../styles/styles';
 import Cropper from '../components/Cropper';
-import FitImage from '../components/FitImage';
 
 const localStyles = StyleSheet.create({
     backButton: {
@@ -27,6 +26,10 @@ const localStyles = StyleSheet.create({
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 10,
     },
+    nextButton: {
+        position: 'absolute',
+        bottom: 50,
+    },
     preview: {
         paddingTop: 75,
         paddingBottom: 75,
@@ -34,26 +37,42 @@ const localStyles = StyleSheet.create({
     },
 });
 
-export default class PhotoPreview extends Component {
+export default class PhotoCropper extends Component {
     constructor(props) {
         super(props);
         this.state = { uri: null };
+        this.cropperRef = createRef();
     }
 
     componentWillMount() {
-        this.setState({
-            originalUri: this.props.navigation.getParam('originalUri', null),
-            uri: this.props.navigation.getParam('croppedUri', null),
-        });
+        this.setState({ uri: this.props.navigation.getParam('uri', null) });
+    }
+
+    cropImage() {
+        const bounds = this.cropperRef.current.bounds;
+        ImageEditor.cropImage(
+            this.state.uri,
+            {
+                offset: { x: bounds.x, y: bounds.y },
+                size: { width: bounds.width, height: bounds.height },
+            },
+            result => {
+                console.log('cropImage', result);
+
+                this.props.navigation.navigate('PhotoPreview', {
+                    originalUri: this.state.uri,
+                    croppedUri: result,
+                });
+            },
+            error => Alert.alert('Something was wrong', error)
+        );
     }
 
     render() {
         return (
             <View
-                style={[styles.container, styles.column, localStyles.preview]}>
-                <View style={[styles.container, { height: '50%' }]}>
-                    <FitImage source={{ uri: this.state.uri }} />
-                </View>
+                style={[styles.container, styles.center, localStyles.preview]}>
+                <Cropper ref={this.cropperRef} source={this.state.uri} />
                 <View style={localStyles.backButton}>
                     <TouchableOpacity
                         onPress={() => this.props.navigation.goBack()}>
@@ -62,6 +81,12 @@ export default class PhotoPreview extends Component {
                         </Text>
                     </TouchableOpacity>
                 </View>
+
+                <Button
+                    title="Preview"
+                    style={localStyles.nextButton}
+                    onPress={() => this.cropImage()}
+                />
             </View>
         );
     }

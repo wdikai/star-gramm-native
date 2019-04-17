@@ -167,7 +167,6 @@ export default class FitImage extends Component<FitImageProps, FitImageState> {
                 }
 
                 this.setOriginalSize(originalWidth, originalHeight);
-                console.log('Image uri', uri);
             },
             error => console.log('Image', uri, error)
         );

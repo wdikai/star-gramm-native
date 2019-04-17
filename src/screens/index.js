@@ -8,6 +8,7 @@ import {
 } from 'react-navigation';
 
 import Camera from './Camera';
+import PhotoCropper from './PhotoCropper';
 import PhotoPreview from './PhotoPreview';
 import Home from './Home';
 import User from './User';
@@ -27,6 +28,7 @@ const appNavigator = createSwitchNavigator(
                     screen: createStackNavigator(
                         {
                             Camera,
+                            PhotoCropper,
                             PhotoPreview,
                         },
                         {

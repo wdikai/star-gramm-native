@@ -5,7 +5,6 @@ import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 
 import styles from '../styles/styles';
-import PhotoPreview from './PhotoPreview';
 
 const localStyles = StyleSheet.create({
     backButton: {
@@ -129,13 +128,13 @@ export default class Camera extends Component {
 
     async takePicture() {
         if (this.camera) {
-            const options = { quality: 1, base64: true };
+            const options = { quality: 1 /*, base64: true */ };
             const data = await this.camera.takePictureAsync(options);
             console.log('Camera takePicture data:');
             console.log(data);
             console.log('========================');
-            this.props.navigation.navigate('PhotoPreview', {
-                uri: `data:image/png;base64,${data.base64}`,
+            this.props.navigation.navigate('PhotoCropper', {
+                uri: data.uri || `data:image/png;base64,${data.base64}`,
             });
         }
     }

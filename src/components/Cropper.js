@@ -10,8 +10,6 @@ const localStyles = StyleSheet.create({
     cropperWindow: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 1)',
     },
     pin: {
         position: 'absolute',
@@ -22,7 +20,7 @@ const localStyles = StyleSheet.create({
     area: {
         height: '100%',
         borderWidth: 1,
-        borderColor: 'transparent',
+        borderColor: 'rgba(0, 0, 0, 1)',
     },
     topLeft: {
         top: 0,
@@ -46,52 +44,170 @@ function middleValue(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
 
+class CropperArea {
+    constructor(rectangle, options = {}) {
+        this.rectangle = rectangle;
+        this.previousRectangle = { ...rectangle };
+        this.sourceImage = null;
+        this.container = null;
+        this.options = options;
+    }
+
+    get x() {
+        return this.rectangle.x;
+    }
+
+    get y() {
+        return this.rectangle.y;
+    }
+
+    get width() {
+        return this.rectangle.width;
+    }
+
+    get height() {
+        return this.rectangle.height;
+    }
+
+    set x(value) {
+        this.rectangle.x = middleValue(
+            value,
+            0,
+            this.container.width - this.rectangle.width
+        );
+    }
+
+    set y(value) {
+        this.rectangle.y = middleValue(
+            value,
+            0,
+            this.container.height - this.rectangle.height
+        );
+    }
+
+    set width(value) {
+        this.rectangle.width = middleValue(
+            value,
+            this.options.minCropperWidth,
+            this.container.width - this.rectangle.x
+        );
+    }
+
+    set height(value) {
+        this.rectangle.height = middleValue(
+            value,
+            this.options.minCropperHeight,
+            this.container.height - this.rectangle.y
+        );
+    }
+
+    setPosition({ x, y }) {
+        this.x = x;
+        this.y = y;
+        this.previousRectangle = { ...this.rectangle };
+    }
+
+    setSize({ width, height }) {
+        this.width = width;
+        this.height = height;
+        this.previousRectangle = { ...this.rectangle };
+    }
+
+    setBounds(bounds) {
+        this.setPosition(bounds);
+        this.setSize(bounds);
+    }
+
+    move({ dx = 0, dy = 0 }) {
+        const x = this.previousRectangle.x + dx;
+        const y = this.previousRectangle.y + dy;
+        this.x = middleValue(x, 0, this.container.width - this.rectangle.width);
+        this.y = middleValue(
+            y,
+            0,
+            this.container.height - this.rectangle.height
+        );
+    }
+
+    resize({ dx = 0, dy = 0 }) {
+        const width = this.previousRectangle.width + dx;
+        const height = this.previousRectangle.height + dy;
+        this.width = width;
+        this.height = height;
+    }
+
+    fixBounds() {
+        const min = Math.min(this.width, this.height);
+        this.width = min * this.options.aspectRatio;
+        this.height = this.width / this.options.aspectRatio;
+    }
+
+    toImageBounds() {
+        const rate = this.sourceImage.originalWidth / this.container.width;
+
+        return {
+            x: Math.round(this.x * rate),
+            y: Math.round(this.y * rate),
+            width: Math.round(this.width * rate),
+            height: Math.round(this.height * rate),
+        };
+    }
+
+    toStyle() {
+        return {
+            left: this.rectangle.x,
+            top: this.rectangle.y,
+            width: this.rectangle.width,
+            height: this.rectangle.height,
+        };
+    }
+}
+
 export default class Cropper extends Component {
     constructor(props) {
         super(props);
+        const aspectRatio = props.aspectRatio || 4 / 3;
+        const minCropperWidth = props.minWidth || 50;
+        const minCropperHeight = Math.floor(minCropperWidth / aspectRatio);
         this.state = {
             uri: null,
             width: 0,
             height: 0,
-            aspectRatio: props.aspectRatio || 1,
+            aspectRatio,
         };
 
-        this.position = {
-            top: 50,
-            left: 50,
-            right: 50,
-            bottom: 50,
-        };
-        this.lastKnownPosition = { ...this.position };
+        this.cropper = new CropperArea(
+            { x: 0, y: 0, width: minCropperWidth, height: minCropperHeight },
+            { minCropperWidth, minCropperHeight, aspectRatio }
+        );
     }
 
-    get width() {
-        return this.state.width;
-    }
-
-    get height() {
-        return this.state.height;
+    get bounds() {
+        return this.cropper.toImageBounds();
     }
 
     setImage(image) {
         this.image = image;
         if (image) {
-            this.position.top = this.position.bottom = 0;
-            this.position.left = this.position.right =
-                (image.layoutWidth -
-                    image.layoutHeight * this.state.aspectRatio) /
-                2;
-            this.lastKnownPosition = { ...this.position };
-            this.setState({
+            const container = {
                 width: image.layoutWidth,
                 height: image.layoutHeight,
+            };
+            this.cropper.sourceImage = image;
+            this.cropper.container = container;
+            this.cropper.setSize(container);
+            this.cropper.fixBounds();
+            this.cropper.setPosition({
+                x: (container.width - this.cropper.width) / 2,
+                y: (container.height - this.cropper.height) / 2,
             });
+            this.setState(container);
         }
     }
 
     setCropper(crop) {
         this.crop = crop;
-        if (crop) crop.setNativeProps({ style: this.position });
+        if (crop) crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
     componentWillMount() {
@@ -99,36 +215,36 @@ export default class Cropper extends Component {
             onMoveShouldSetResponderCapture: () => true,
             onMoveShouldSetPanResponderCapture: () => true,
             onPanResponderMove: this.moveArea.bind(this),
-            onPanResponderRelease: this.setLastKnownAreaPosition.bind(this),
-            onPanResponderTerminate: this.setLastKnownAreaPosition.bind(this),
+            onPanResponderRelease: this.stopMoving.bind(this),
+            onPanResponderTerminate: this.stopMoving.bind(this),
         });
         this.topLeftResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => true,
             onMoveShouldSetPanResponderCapture: () => true,
-            onPanResponderMove: this.moveLeftTop.bind(this),
-            onPanResponderRelease: this.setLastKnownLeftTop.bind(this),
-            onPanResponderTerminate: this.setLastKnownLeftTop.bind(this),
+            onPanResponderMove: this.moveLeftTopBorder.bind(this),
+            onPanResponderRelease: this.stopMoving.bind(this),
+            onPanResponderTerminate: this.stopMoving.bind(this),
         });
         this.topRightResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => true,
             onMoveShouldSetPanResponderCapture: () => true,
-            onPanResponderMove: this.moveRightTop.bind(this),
-            onPanResponderRelease: this.setLastKnownRightTop.bind(this),
-            onPanResponderTerminate: this.setLastKnownRightTop.bind(this),
+            onPanResponderMove: this.moveRightTopBorder.bind(this),
+            onPanResponderRelease: this.stopMoving.bind(this),
+            onPanResponderTerminate: this.stopMoving.bind(this),
         });
         this.bottomLeftResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => true,
             onMoveShouldSetPanResponderCapture: () => true,
-            onPanResponderMove: this.moveLeftBottom.bind(this),
-            onPanResponderRelease: this.setLastKnownLeftBottom.bind(this),
-            onPanResponderTerminate: this.setLastKnownLeftBottom.bind(this),
+            onPanResponderMove: this.moveLeftBottomBorder.bind(this),
+            onPanResponderRelease: this.stopMoving.bind(this),
+            onPanResponderTerminate: this.stopMoving.bind(this),
         });
         this.bottomRightResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => true,
             onMoveShouldSetPanResponderCapture: () => true,
-            onPanResponderMove: this.moveRightBottom.bind(this),
-            onPanResponderRelease: this.setLastKnownRightBottom.bind(this),
-            onPanResponderTerminate: this.setLastKnownRightBottom.bind(this),
+            onPanResponderMove: this.moveRightBottomBorder.bind(this),
+            onPanResponderRelease: this.stopMoving.bind(this),
+            onPanResponderTerminate: this.stopMoving.bind(this),
         });
     }
 
@@ -138,118 +254,43 @@ export default class Cropper extends Component {
 
     moveArea(e, gestureState) {
         const { dx, dy } = gestureState;
-        const left = this.lastKnownPosition.left + dx;
-        const top = this.lastKnownPosition.top + dy;
-        const right = this.lastKnownPosition.right - dx;
-        const bottom = this.lastKnownPosition.bottom - dy;
-        this.setLeft(left);
-        this.setTop(top);
-        this.setRight(right);
-        this.setBottom(bottom);
-        this.crop.setNativeProps({ style: this.position });
+        this.cropper.move({ dx, dy });
+        this.crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
-    moveLeftTop(e, gestureState) {
+    moveLeftTopBorder(e, gestureState) {
         const { dx, dy } = gestureState;
-        const left = this.lastKnownPosition.left + dx;
-        const top = this.lastKnownPosition.top + dy;
-        this.setLeft(left);
-        this.setTop(top);
-        this.crop.setNativeProps({ style: this.position });
+        this.cropper.move({ dx, dy });
+        this.cropper.resize({ dx: -dx, dy: -dy });
+        this.cropper.fixBounds();
+        this.crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
-    moveLeftBottom(e, gestureState) {
+    moveRightTopBorder(e, gestureState) {
         const { dx, dy } = gestureState;
-        const left = this.lastKnownPosition.left + dx;
-        const bottom = this.lastKnownPosition.bottom - dy;
-        this.setLeft(left);
-        this.setBottom(bottom);
-        this.crop.setNativeProps({ style: this.position });
+        this.cropper.move({ dy });
+        this.cropper.resize({ dx: dx, dy: -dy });
+        this.cropper.fixBounds();
+        this.crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
-    moveRightTop(e, gestureState) {
+    moveLeftBottomBorder(e, gestureState) {
         const { dx, dy } = gestureState;
-        const right = this.lastKnownPosition.right - dx;
-        const top = this.lastKnownPosition.top + dy;
-        this.setRight(right);
-        this.setTop(top);
-        this.crop.setNativeProps({ style: this.position });
+        this.cropper.move({ dx });
+        this.cropper.resize({ dx: -dx, dy: dy });
+        this.cropper.fixBounds();
+        this.crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
-    moveRightBottom(e, gestureState) {
+    moveRightBottomBorder(e, gestureState) {
         const { dx, dy } = gestureState;
-        const right = this.lastKnownPosition.right - dx;
-        const bottom = this.lastKnownPosition.bottom - dy;
-        this.setRight(right);
-        this.setBottom(bottom);
-        this.crop.setNativeProps({ style: this.position });
+        this.cropper.resize({ dx, dy: dy });
+        this.cropper.fixBounds();
+        this.crop.setNativeProps({ style: this.cropper.toStyle() });
     }
 
-    setLastKnownLeftTop(e, gestureState) {
-        this.lastKnownPosition.left += gestureState.dx;
-        this.lastKnownPosition.top += gestureState.dy;
-    }
-
-    setLastKnownLeftBottom(e, gestureState) {
-        this.lastKnownPosition.left += gestureState.dx;
-        this.lastKnownPosition.bottom -= gestureState.dy;
-    }
-
-    setLastKnownRightTop(e, gestureState) {
-        this.lastKnownPosition.right -= gestureState.dx;
-        this.lastKnownPosition.top += gestureState.dy;
-    }
-
-    setLastKnownRightBottom(e, gestureState) {
-        this.lastKnownPosition.right -= gestureState.dx;
-        this.lastKnownPosition.bottom -= gestureState.dy;
-    }
-
-    setLastKnownAreaPosition(e, gestureState) {
-        this.lastKnownPosition.left += gestureState.dx;
-        this.lastKnownPosition.top += gestureState.dy;
-        this.lastKnownPosition.right -= gestureState.dx;
-        this.lastKnownPosition.bottom -= gestureState.dy;
-    }
-
-    setLeft(left) {
-        if (left <= 0) {
-            this.position.left = 0;
-        } else if (left >= this.width - this.position.right) {
-            this.position.left = this.width - this.position.right;
-        } else {
-            this.position.left = left;
-        }
-    }
-
-    setTop(top) {
-        if (top <= 0) {
-            this.position.top = 0;
-        } else if (top >= this.height - this.position.bottom) {
-            this.position.top = this.height - this.position.bottom;
-        } else {
-            this.position.top = top;
-        }
-    }
-
-    setRight(right) {
-        if (right <= 0) {
-            this.position.right = 0;
-        } else if (right >= this.width - this.position.left) {
-            this.position.right = this.width - this.position.left;
-        } else {
-            this.position.right = right;
-        }
-    }
-
-    setBottom(bottom) {
-        if (bottom <= 0) {
-            this.position.bottom = 0;
-        } else if (bottom >= this.height - this.position.top) {
-            this.position.bottom = this.height - this.position.top;
-        } else {
-            this.position.bottom = bottom;
-        }
+    stopMoving() {
+        this.cropper.setBounds(this.cropper.rectangle);
     }
 
     render() {
