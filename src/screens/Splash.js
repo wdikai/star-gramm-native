@@ -12,9 +12,7 @@ export default class Splash extends Component {
 
     async checkAuth() {
         const userToken = await AsyncStorage.getItem('userToken');
-        this.props.navigation.navigate(userToken ? 'PhotoCropper' : 'Login', {
-            uri: 'https://via.placeholder.com/640X480/79eec1',
-        });
+        this.props.navigation.navigate(userToken ? 'Main' : 'Login');
     }
 
     render() {

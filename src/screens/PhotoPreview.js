@@ -50,8 +50,8 @@ export default class PhotoPreview extends Component {
     render() {
         return (
             <View
-                style={[styles.container, styles.column, localStyles.preview]}>
-                <View style={[styles.container, { height: '50%' }]}>
+                style={[styles.container, styles.center, localStyles.preview]}>
+                <View style={[styles.container]}>
                     <FitImage source={{ uri: this.state.uri }} />
                 </View>
                 <View style={localStyles.backButton}>
