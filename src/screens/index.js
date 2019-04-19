@@ -17,6 +17,7 @@ import Feed from './Feed';
 import Post from './Post';
 import Login from './Login';
 import Profile from './Profile';
+import Settings from './Settings';
 import Splash from './Splash';
 
 const appNavigator = createSwitchNavigator(
@@ -48,7 +49,10 @@ const appNavigator = createSwitchNavigator(
                     { Feed, User, Post },
                     { initialRouteName: 'Feed' }
                 ),
-                Profile,
+                Profile: createStackNavigator(
+                    { Profile, Settings },
+                    { initialRouteName: 'Profile' }
+                ),
             },
             {
                 initialRouteName: 'Feed',

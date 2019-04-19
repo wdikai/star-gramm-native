@@ -46,8 +46,8 @@ class UserDetail extends Component {
             actions = (
                 <TouchableHighlight
                     style={innerStyles.editButton}
-                    onPress={() => logout(this.props.navigation)}>
-                    <Text>Logout</Text>
+                    onPress={() => this.props.navigation.navigate('Settings')}>
+                    <Text>Edit profile</Text>
                 </TouchableHighlight>
             );
         } else {
