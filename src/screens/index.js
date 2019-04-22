@@ -10,6 +10,7 @@ import {
 import Camera from './Camera';
 import PhotoCropper from './PhotoCropper';
 import PhotoPreview from './PhotoPreview';
+import PostCreate from './PostCreate';
 import Home from './Home';
 import User from './User';
 import Users from './Users';
@@ -28,13 +29,18 @@ const appNavigator = createSwitchNavigator(
                 Camera: {
                     screen: createStackNavigator(
                         {
-                            Camera,
+                            Camera: {
+                                screen: Camera,
+                                navigationOptions: {
+                                    header: null,
+                                },
+                            },
                             PhotoCropper,
                             PhotoPreview,
+                            PostCreate,
                         },
                         {
                             initialRouteName: 'Camera',
-                            headerMode: 'none',
                         }
                     ),
                     navigationOptions: {
@@ -50,7 +56,10 @@ const appNavigator = createSwitchNavigator(
                     { initialRouteName: 'Feed' }
                 ),
                 Profile: createStackNavigator(
-                    { Profile, EditProfile },
+                    {
+                        Profile,
+                        EditProfile,
+                    },
                     { initialRouteName: 'Profile' }
                 ),
             },

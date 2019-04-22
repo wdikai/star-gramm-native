@@ -2,6 +2,8 @@
 
 import React, { Component } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { observer, inject } from 'mobx-react/native';
+import { action } from 'mobx';
 import { RNCamera } from 'react-native-camera';
 
 import styles from '../styles/styles';
@@ -41,23 +43,36 @@ const localStyles = StyleSheet.create({
     },
 });
 
+@inject(stores => ({ photoStore: stores.root.photoStore }))
+@observer
 export default class Camera extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            hasCameraPermission: true,
-            focusedScreen: true,
-        };
+    componentDidMount() {
+        const { navigation, photoStore } = this.props;
+        navigation.addListener(
+            'willFocus',
+            action(() => (photoStore.focusedScreen = true))
+        );
+        navigation.addListener(
+            'willBlur',
+            action(() => (photoStore.focusedScreen = false))
+        );
     }
 
-    componentDidMount() {
-        const { navigation } = this.props;
-        navigation.addListener('willFocus', () => {
-            this.setState({ focusedScreen: true });
-        });
-        navigation.addListener('willBlur', () =>
-            this.setState({ focusedScreen: false })
-        );
+    async takePicture() {
+        if (this.camera) {
+            const { photoStore, navigation } = this.props;
+            const options = { quality: 1 };
+            const data = await this.camera.takePictureAsync(options);
+            const uri = data.uri || `data:image/png;base64,${data.base64}`;
+            photoStore.setUri(uri);
+            navigation.navigate('PhotoCropper');
+        }
+    }
+
+    back() {
+        const { photoStore, navigation } = this.props;
+        photoStore.removeAllFiles();
+        navigation.navigate('Feed');
     }
 
     render() {
@@ -72,8 +87,7 @@ export default class Camera extends Component {
                     {this.renderCamera()}
                 </View>
                 <View style={localStyles.backButton}>
-                    <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate('Feed')}>
+                    <TouchableOpacity onPress={() => this.back()}>
                         <Text style={localStyles.backButtonText}>Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -89,10 +103,10 @@ export default class Camera extends Component {
     }
 
     renderCamera() {
-        const { hasCameraPermission, focusedScreen } = this.state;
-        if (!hasCameraPermission) {
+        const { photoStore } = this.props;
+        if (!photoStore.hasCameraPermission) {
             return <Text>No access to camera</Text>;
-        } else if (focusedScreen) {
+        } else if (photoStore.focusedScreen) {
             return this.cameraView();
         } else {
             return <View />;
@@ -111,7 +125,9 @@ export default class Camera extends Component {
                     alignItems: 'center',
                     width: '100%',
                 }}
-                onStatusChange={event => this.changePermission(event)}
+                onStatusChange={event =>
+                    this.props.photoStore.changePermission(event.cameraStatus)
+                }
                 type={RNCamera.Constants.Type.back}
                 ratio="3:4"
                 captureAudio={false}
@@ -124,23 +140,5 @@ export default class Camera extends Component {
                 }}
             />
         );
-    }
-
-    async takePicture() {
-        if (this.camera) {
-            const options = { quality: 1 /*, base64: true */ };
-            const data = await this.camera.takePictureAsync(options);
-            console.log('Camera takePicture data:');
-            console.log(data);
-            console.log('========================');
-            this.props.navigation.navigate('PhotoCropper', {
-                uri: data.uri || `data:image/png;base64,${data.base64}`,
-            });
-        }
-    }
-
-    changePermission(event) {
-        console.log('change permission', event.cameraStatus);
-        this.setState({ hasCameraPermission: event.cameraStatus === 'READY' });
     }
 }

@@ -17,7 +17,7 @@ const localStyles = StyleSheet.create({
     },
 });
 
-function FormField({ field, error }) {
+function FormField({ field, error, multiline = false, numberOfLines = 1 }) {
     const inputStyles = [localStyles.inputText];
     if (error) inputStyles.push(localStyles.inputError);
 
@@ -29,6 +29,8 @@ function FormField({ field, error }) {
                 onChangeText={field.onChange}
                 placeholder={field.placeholder}
                 value={field.value}
+                multiline={multiline}
+                numberOfLines={numberOfLines}
             />
             {!!error && <Text style={localStyles.errorText}>{error}</Text>}
         </View>

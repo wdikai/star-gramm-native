@@ -2,13 +2,14 @@
 
 import React, { Component } from 'react';
 import {
-    ScrollView,
+    KeyboardAvoidingView,
     View,
     StyleSheet,
     Button,
     TouchableOpacity,
-    Text,
+    TouchableWithoutFeedback,
     Alert,
+    Keyboard,
 } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import ImagePicker from 'react-native-image-picker';
@@ -56,44 +57,47 @@ export default class EditProfile extends Component {
     render() {
         const profileStore = this.props.profileStore;
         return (
-            <ScrollView style={[styles.container, localStyles.container]}>
-                <View style={[styles.row, styles.center]}>
-                    <TouchableOpacity onPress={() => this.changeAvatar()}>
-                        {!!profileStore.avatar ? (
-                            <FitImage
-                                source={profileStore.avatar}
-                                style={localStyles.avatar}
-                            />
-                        ) : (
-                            <Text>A</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-                <View>
-                    <FormField
-                        field={profileStore.form.$('name').bind()}
-                        error={profileStore.form.$('name').error}
-                    />
-                    <FormField
-                        field={profileStore.form.$('fullName').bind()}
-                        error={profileStore.form.$('fullName').error}
-                    />
-                    <FormField
-                        field={profileStore.form.$('bio').bind()}
-                        error={profileStore.form.$('bio').error}
-                    />
-                    <FormField
-                        field={profileStore.form.$('email').bind()}
-                        error={profileStore.form.$('email').error}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <KeyboardAvoidingView
+                    behavior="position"
+                    enabled
+                    contentContainerStyle={{ justifyContent: 'flex-end' }}>
+                    <View style={[styles.row, styles.center]}>
+                        <TouchableOpacity onPress={() => this.changeAvatar()}>
+                            {!!profileStore.avatar && (
+                                <FitImage
+                                    source={profileStore.avatar}
+                                    style={localStyles.avatar}
+                                />
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                    <View>
+                        <FormField
+                            field={profileStore.form.$('name').bind()}
+                            error={profileStore.form.$('name').error}
+                        />
+                        <FormField
+                            field={profileStore.form.$('fullName').bind()}
+                            error={profileStore.form.$('fullName').error}
+                        />
+                        <FormField
+                            field={profileStore.form.$('bio').bind()}
+                            error={profileStore.form.$('bio').error}
+                            multiline
+                        />
+                        <FormField
+                            field={profileStore.form.$('email').bind()}
+                            error={profileStore.form.$('email').error}
+                        />
 
-                    <Button
-                        onPress={profileStore.form.onSubmit}
-                        title="Submit"
-                    />
-                    <Text>{JSON.stringify(profileStore.user, null, 4)}</Text>
-                </View>
-            </ScrollView>
+                        <Button
+                            onPress={profileStore.form.onSubmit}
+                            title="Submit"
+                        />
+                    </View>
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
         );
     }
 }

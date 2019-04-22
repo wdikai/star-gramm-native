@@ -3,6 +3,8 @@
 import { PostsStore } from './posts';
 import { UsersStore } from './users';
 import { ProfileStore } from './profile';
+import { PhotoStore } from './photo';
+
 import { UserService } from '../services/UserService';
 import { PostService } from '../services/PostService';
 
@@ -13,6 +15,7 @@ export default class RootStore {
 
         this.profileStore = new ProfileStore({ userService });
         this.feedStore = new PostsStore({ postService });
+        this.photoStore = new PhotoStore({ postService });
         this.userStore = new UsersStore({ userService });
     }
 }

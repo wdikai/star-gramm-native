@@ -7,6 +7,9 @@ import styles from '../styles/styles';
 import FitImage from '../components/FitImage';
 
 const localStyles = StyleSheet.create({
+    cropper: {
+        width: '100%',
+    },
     cropperWindow: {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -295,7 +298,7 @@ export default class Cropper extends Component {
 
     render() {
         return (
-            <View style={[styles.container]}>
+            <View style={[localStyles.cropper]}>
                 <FitImage
                     onResize={image => this.setImage(image)}
                     source={{ uri: this.props.source }}
