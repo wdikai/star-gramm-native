@@ -35,8 +35,8 @@ const innerStyles = StyleSheet.create({
     },
 });
 
-@observer
 @withNavigation
+@observer
 class UserDetail extends Component {
     render() {
         let actions = null;

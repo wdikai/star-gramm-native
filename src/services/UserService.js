@@ -16,6 +16,8 @@ export class UserService {
         return {
             id,
             name: `User ${id}`,
+            fullName: 'Test User',
+            email: 'test@user.com',
             avatar: getImage(50, 50, id),
             countFollowers: 10,
             countFollowings: 10,
@@ -33,5 +35,10 @@ export class UserService {
         return Promise.all(
             Array.from({ length }).map((_, i) => this.getUser(i + 1 + offset))
         );
+    }
+
+    async patchUser(id, data) {
+        const user = await this.getUser(id);
+        return { ...user, ...data };
     }
 }

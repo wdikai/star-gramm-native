@@ -6,7 +6,9 @@ const timeout = time => new Promise(resolve => setTimeout(resolve, time));
 
 export default class User {
     @observable id;
+    @observable email;
     @observable name;
+    @observable fullName;
     @observable avatar;
     @observable countFollowers;
     @observable countFollowings;
@@ -15,7 +17,9 @@ export default class User {
 
     constructor(options) {
         this.id = options.id;
+        this.email = options.email;
         this.name = options.name;
+        this.fullName = options.fullName;
         this.avatar = options.avatar;
         this.countFollowers = options.countFollowers || 0;
         this.countFollowings = options.countFollowings || 0;
@@ -25,7 +29,9 @@ export default class User {
 
     @action
     update(data) {
+        this.email = data.email;
         this.name = data.name;
+        this.fullName = data.fullName;
         this.avatar = data.avatar;
         this.countFollowers = data.countFollowers;
         this.countFollowings = data.countFollowings;
