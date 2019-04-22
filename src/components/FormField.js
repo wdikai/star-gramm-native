@@ -7,20 +7,30 @@ import { observer } from 'mobx-react';
 const localStyles = StyleSheet.create({
     inputText: {
         borderBottomWidth: 1,
+        borderBottomColor: 'lightgray',
+    },
+    inputError: {
+        borderBottomColor: 'red',
+    },
+    errorText: {
+        color: 'red',
     },
 });
 
 function FormField({ field, error }) {
+    const inputStyles = [localStyles.inputText];
+    if (error) inputStyles.push(localStyles.inputError);
+
     return (
         <View>
-            {!!field.value && <Text>{field.label}</Text>}
+            {!!field.label && <Text>{field.label}</Text>}
             <TextInput
-                style={localStyles.inputText}
+                style={inputStyles}
                 onChangeText={field.onChange}
-                placeholder={field.label}
+                placeholder={field.placeholder}
                 value={field.value}
             />
-            <Text>{error}</Text>
+            {!!error && <Text style={localStyles.errorText}>{error}</Text>}
         </View>
     );
 }

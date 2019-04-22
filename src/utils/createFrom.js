@@ -10,6 +10,7 @@ export function createFrom({
     fields,
     hooks = {},
     plugins = {},
+    options = {},
     validatorExtension,
 }) {
     return new MobxReactForm(
@@ -23,6 +24,7 @@ export function createFrom({
                 ...plugins,
             },
             hooks,
+            options,
         }
     );
 }

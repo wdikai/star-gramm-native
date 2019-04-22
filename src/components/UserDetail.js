@@ -46,7 +46,9 @@ class UserDetail extends Component {
             actions = (
                 <TouchableHighlight
                     style={innerStyles.editButton}
-                    onPress={() => this.props.navigation.navigate('Settings')}>
+                    onPress={() =>
+                        this.props.navigation.navigate('EditProfile')
+                    }>
                     <Text>Edit profile</Text>
                 </TouchableHighlight>
             );
