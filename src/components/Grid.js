@@ -31,13 +31,18 @@ class Grid extends Component {
         );
     }
 
+    get itemStyle() {
+        const { itemsPerRow = 2 } = this.props;
+        return { flex: 1, maxWidth: `${Math.floor(100 / itemsPerRow)}%` };
+    }
+
     renderRow(row = []) {
         const { renderItem, horizontal } = this.props;
         const rowStyles = horizontal ? styles.column : styles.row;
         return (
             <View style={[rowStyles, { flex: 1 }]}>
                 {row.map((item, index) => (
-                    <View key={`item_${index}`} style={{ flex: 1 }}>
+                    <View key={`item_${index}`} style={this.itemStyle}>
                         {renderItem({ item })}
                     </View>
                 ))}
@@ -47,7 +52,7 @@ class Grid extends Component {
 
     chunkArray(array, size) {
         let buffer = [];
-        return array.reduce((result, item) => {
+        const result = array.reduce((result, item) => {
             buffer.push(item);
             if (buffer.length === size) {
                 result.push(buffer);
@@ -56,6 +61,12 @@ class Grid extends Component {
 
             return result;
         }, []);
+
+        if (buffer.length) {
+            result.push(buffer);
+        }
+
+        return result;
     }
 }
 

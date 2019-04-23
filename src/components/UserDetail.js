@@ -64,7 +64,6 @@ class UserDetail extends Component {
     componentWillMount() {
         const { user } = this.props;
         user.fetchPosts();
-        autorun(() => console.log(user.posts.length));
     }
 
     render() {

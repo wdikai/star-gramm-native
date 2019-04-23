@@ -12,6 +12,7 @@ import {
     Keyboard,
 } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
+import { reaction, toJS } from 'mobx';
 import ImagePicker from 'react-native-image-picker';
 
 import styles from '../styles/styles';
