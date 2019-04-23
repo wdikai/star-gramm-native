@@ -1,6 +1,8 @@
 /** @format */
 
-import { action, observable } from 'mobx/lib/mobx';
+import { action, observable, computed } from 'mobx';
+import Post from './post';
+import { runInAction } from 'mobx/lib/mobx';
 
 const timeout = time => new Promise(resolve => setTimeout(resolve, time));
 
@@ -15,16 +17,26 @@ export default class User {
     @observable bio;
     @observable isFollow;
 
-    constructor(options) {
-        this.id = options.id;
-        this.email = options.email;
-        this.name = options.name;
-        this.fullName = options.fullName;
-        this.avatar = options.avatar;
-        this.countFollowers = options.countFollowers || 0;
-        this.countFollowings = options.countFollowings || 0;
-        this.bio = options.bio || '';
-        this.isFollow = options.isFollow || false;
+    @observable posts = [];
+    @observable isPostsLoading = false;
+
+    constructor(data, services) {
+        this.id = data.id;
+        this.email = data.email;
+        this.name = data.name;
+        this.fullName = data.fullName;
+        this.avatar = data.avatar;
+        this.countFollowers = data.countFollowers || 0;
+        this.countFollowings = data.countFollowings || 0;
+        this.bio = data.bio || '';
+        this.isFollow = data.isFollow || false;
+
+        this.postService = services.postService;
+    }
+
+    @computed
+    get offset() {
+        return this.posts.length;
     }
 
     @action
@@ -41,7 +53,27 @@ export default class User {
     @action
     async follow() {
         await timeout(1000);
-        this.isFollow = !this.isFollow;
-        this.countFollowers += this.isFollow ? 1 : -1;
+
+        runInAction(() => {
+            this.isFollow = !this.isFollow;
+            this.countFollowers += this.isFollow ? 1 : -1;
+        });
+    }
+
+    @action
+    async fetchPosts(offset = 0) {
+        this.isPostsLoading = true;
+        const response = await this.postService.getUserPosts(
+            this.id,
+            20,
+            offset
+        );
+
+        runInAction(() => {
+            const posts = response.map(post => new Post(post));
+            if (!offset) this.posts = [];
+            this.posts.push(...posts);
+            this.isPostsLoading = false;
+        });
     }
 }

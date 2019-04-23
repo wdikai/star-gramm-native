@@ -2,6 +2,10 @@
 
 import { StyleSheet } from 'react-native';
 
+function toPercent(value) {
+    return `${Math.floor(value)}%`;
+}
+
 export default StyleSheet.create({
     container: {
         width: '100%',
@@ -22,39 +26,39 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
     },
     col1: {
-        flex: 1,
+        width: toPercent(100 / 12),
     },
     col2: {
-        flex: 2,
+        width: toPercent(100 / 6),
     },
     col3: {
-        flex: 3,
+        width: toPercent(100 / 4),
     },
     col4: {
-        flex: 4,
+        width: toPercent(100 / 3),
     },
     col5: {
-        flex: 5,
+        width: toPercent((100 * 5) / 12),
     },
     col6: {
-        flex: 6,
+        width: toPercent(100 / 2),
     },
     col7: {
-        flex: 7,
+        width: toPercent((100 * 7) / 12),
     },
     col8: {
-        flex: 8,
+        width: toPercent(200 / 3),
     },
     col9: {
-        flex: 9,
+        width: toPercent((100 * 9) / 12),
     },
     col10: {
-        flex: 10,
+        width: toPercent((100 * 5) / 6),
     },
     col11: {
-        flex: 11,
+        width: toPercent((100 * 11) / 12),
     },
     col12: {
-        flex: 12,
+        width: toPercent(100),
     },
 });

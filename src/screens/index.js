@@ -59,12 +59,13 @@ const appNavigator = createSwitchNavigator(
                     {
                         Profile,
                         EditProfile,
+                        Post,
                     },
                     { initialRouteName: 'Profile' }
                 ),
             },
             {
-                initialRouteName: 'Feed',
+                initialRouteName: 'Profile',
             }
         ),
         Splash,

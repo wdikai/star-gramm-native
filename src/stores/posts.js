@@ -2,7 +2,7 @@
 
 import { observable, action } from 'mobx';
 import Post from '../models/post';
-import { computed } from 'mobx/lib/mobx';
+import { computed, runInAction } from 'mobx/lib/mobx';
 
 export class PostsStore {
     @observable posts = [];
@@ -24,22 +24,27 @@ export class PostsStore {
         this.currentPost = this.posts.find(user => user.id === id);
         const response = await this.postService.getPost(id);
 
-        if (this.currentPost) {
-            this.currentPost.update(response);
-        } else {
-            this.currentPost = new Post(response);
-        }
+        runInAction(() => {
+            if (this.currentPost) {
+                this.currentPost.update(response);
+            } else {
+                this.currentPost = new Post(response);
+            }
 
-        this.isLoading = false;
+            this.isLoading = false;
+        });
     }
 
     @action
     async fetchPosts(offset = 0) {
         this.isLoading = true;
         const response = await this.postService.getPosts(20, offset);
-        const posts = response.map(user => new Post(user));
-        if (!offset) this.posts = [];
-        this.posts.push(...posts);
-        this.isLoading = false;
+
+        runInAction(() => {
+            const posts = response.map(user => new Post(user));
+            if (!offset) this.posts = [];
+            this.posts.push(...posts);
+            this.isLoading = false;
+        });
     }
 }

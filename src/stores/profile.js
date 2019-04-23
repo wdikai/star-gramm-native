@@ -1,6 +1,6 @@
 /** @format */
 
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import User from '../models/user';
 import { createFrom } from '../utils/createFrom';
 import { fields, options } from '../forms/profile';
@@ -12,8 +12,9 @@ export class ProfileStore {
     @observable avatar = null;
     @observable form = null;
 
-    constructor({ userService }) {
+    constructor({ userService, postService }) {
         this.userService = userService;
+        this.postService = postService;
         this.form = createFrom({
             fields,
             options,
@@ -36,17 +37,19 @@ export class ProfileStore {
 
     @action
     async fetchProfile() {
+        const { postService } = this;
         this.isLoading = true;
         const response = await this.userService.getUser(10);
+        runInAction(() => {
+            if (this.user) {
+                this.user.update(response);
+            } else {
+                this.user = new User(response, { postService });
+            }
 
-        if (this.user) {
-            this.user.update(response);
-        } else {
-            this.user = new User(response);
-        }
-
-        this.init();
-        this.isLoading = false;
+            this.init();
+            this.isLoading = false;
+        });
     }
 
     @action
@@ -62,7 +65,10 @@ export class ProfileStore {
     async updateProfile(data) {
         this.isLoading = true;
         const response = await this.userService.patchUser(10, data);
-        this.user.update(response);
-        this.isLoading = false;
+
+        runInAction(() => {
+            this.user.update(response);
+            this.isLoading = false;
+        });
     }
 }

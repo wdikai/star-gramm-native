@@ -31,6 +31,12 @@ const localStyles = StyleSheet.create({
 @inject(stores => ({ profileStore: stores.root.profileStore }))
 @observer
 export default class EditProfile extends Component {
+    static navigationOptions({ navigation }) {
+        return {
+            title: 'Edit Profile',
+        };
+    }
+
     async componentWillMount() {
         await this.props.profileStore.fetchProfile();
     }
@@ -61,7 +67,8 @@ export default class EditProfile extends Component {
                 <KeyboardAvoidingView
                     behavior="position"
                     enabled
-                    contentContainerStyle={{ justifyContent: 'flex-end' }}>
+                    contentContainerStyle={{ justifyContent: 'flex-end' }}
+                    style={localStyles.container}>
                     <View style={[styles.row, styles.center]}>
                         <TouchableOpacity onPress={() => this.changeAvatar()}>
                             {!!profileStore.avatar && (
