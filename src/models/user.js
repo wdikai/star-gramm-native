@@ -25,10 +25,10 @@ export default class User {
         this.email = data.email;
         this.name = data.name;
         this.fullName = data.fullName;
+        this.bio = data.bio || '';
         this.avatar = data.avatar;
         this.countFollowers = data.countFollowers || 0;
         this.countFollowings = data.countFollowings || 0;
-        this.bio = data.bio || '';
         this.isFollow = data.isFollow || false;
 
         this.postService = services.postService;

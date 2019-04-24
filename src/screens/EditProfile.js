@@ -12,7 +12,6 @@ import {
     Keyboard,
 } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
-import { reaction, toJS } from 'mobx';
 import ImagePicker from 'react-native-image-picker';
 
 import styles from '../styles/styles';
@@ -38,8 +37,8 @@ export default class EditProfile extends Component {
         };
     }
 
-    async componentWillMount() {
-        await this.props.profileStore.fetchProfile();
+    componentWillMount() {
+        this.props.profileStore.fetchProfile();
     }
 
     changeAvatar() {

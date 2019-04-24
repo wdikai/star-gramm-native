@@ -12,8 +12,6 @@ import { TabView } from 'react-native-tab-view';
 import { withNavigation } from 'react-navigation';
 import { observer } from 'mobx-react/native';
 
-import { autorun } from 'mobx';
-
 import FitImage from './FitImage';
 import Grid from './Grid';
 import FollowButton from './FollowButton';

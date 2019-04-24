@@ -32,7 +32,12 @@ export class ProfileStore {
     @action
     init() {
         this.setAvatar();
-        this.form.init(this.user);
+        this.form.init({
+            email: this.user.email,
+            name: this.user.name,
+            fullName: this.user.fullName,
+            bio: this.user.bio,
+        });
     }
 
     @action
