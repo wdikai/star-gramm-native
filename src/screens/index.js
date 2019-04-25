@@ -23,49 +23,62 @@ import Splash from './Splash';
 
 const appNavigator = createSwitchNavigator(
     {
-        Main: createBottomTabNavigator(
+        App: createStackNavigator(
             {
-                Home,
-                Camera: {
-                    screen: createStackNavigator(
+                Main: {
+                    screen: createBottomTabNavigator(
                         {
+                            Home,
                             Camera: {
-                                screen: Camera,
+                                screen: createStackNavigator(
+                                    {
+                                        Camera: {
+                                            screen: Camera,
+                                            navigationOptions: {
+                                                header: null,
+                                            },
+                                        },
+                                        PhotoCropper,
+                                        PhotoPreview,
+                                        PostCreate,
+                                    },
+                                    {
+                                        initialRouteName: 'Camera',
+                                    }
+                                ),
                                 navigationOptions: {
-                                    header: null,
+                                    tabBarVisible: false,
                                 },
                             },
-                            PhotoCropper,
-                            PhotoPreview,
-                            PostCreate,
+                            Users: createStackNavigator(
+                                { Users, User, Post },
+                                { initialRouteName: 'Users' }
+                            ),
+                            Feed: createStackNavigator(
+                                { Feed, User, Post },
+                                { initialRouteName: 'Feed' }
+                            ),
+                            Profile: createStackNavigator(
+                                {
+                                    Profile,
+                                    Post,
+                                    User,
+                                },
+                                { initialRouteName: 'Profile' }
+                            ),
                         },
                         {
-                            initialRouteName: 'Camera',
+                            initialRouteName: 'Profile',
                         }
                     ),
                     navigationOptions: {
-                        tabBarVisible: false,
+                        header: null,
                     },
                 },
-                Users: createStackNavigator(
-                    { Users, User, Post },
-                    { initialRouteName: 'Users' }
-                ),
-                Feed: createStackNavigator(
-                    { Feed, User, Post },
-                    { initialRouteName: 'Feed' }
-                ),
-                Profile: createStackNavigator(
-                    {
-                        Profile,
-                        EditProfile,
-                        Post,
-                    },
-                    { initialRouteName: 'Profile' }
-                ),
+                EditProfile,
             },
             {
-                initialRouteName: 'Profile',
+                initialRouteName: 'Main',
             }
         ),
         Splash,

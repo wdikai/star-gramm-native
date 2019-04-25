@@ -2,8 +2,9 @@
 
 import React, { Component } from 'react';
 import {
-    KeyboardAvoidingView,
+    ScrollView,
     View,
+    Text,
     StyleSheet,
     Button,
     TouchableOpacity,
@@ -21,24 +22,55 @@ import FormField from '../components/FormField';
 const localStyles = StyleSheet.create({
     container: {
         padding: 5,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
     },
     avatar: {
         width: 50,
         height: 50,
     },
+    headerContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingRight: 15,
+    },
+    headerText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+    },
 });
+
+function Header({ onSubmit }) {
+    return (
+        <View style={localStyles.headerContainer}>
+            <Text style={localStyles.headerText}>Edit Profile</Text>
+            <Button onPress={onSubmit} title="Save" />
+        </View>
+    );
+}
 
 @inject(stores => ({ profileStore: stores.root.profileStore }))
 @observer
 export default class EditProfile extends Component {
     static navigationOptions({ navigation }) {
         return {
-            title: 'Edit Profile',
+            headerTitle: <Header onSubmit={navigation.getParam('onSubmit')} />,
         };
     }
 
     componentWillMount() {
-        this.props.profileStore.fetchProfile();
+        const { navigation, profileStore } = this.props;
+        navigation.setParams({
+            onSubmit: event => {
+                profileStore.form.onSubmit(event);
+                navigation.goBack();
+            },
+        });
+        profileStore.fetchProfile();
     }
 
     changeAvatar() {
@@ -64,46 +96,40 @@ export default class EditProfile extends Component {
         const profileStore = this.props.profileStore;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView
-                    behavior="position"
-                    enabled
-                    contentContainerStyle={{ justifyContent: 'flex-end' }}
-                    style={localStyles.container}>
-                    <View style={[styles.row, styles.center]}>
-                        <TouchableOpacity onPress={() => this.changeAvatar()}>
-                            {!!profileStore.avatar && (
-                                <FitImage
-                                    source={profileStore.avatar}
-                                    style={localStyles.avatar}
-                                />
-                            )}
-                        </TouchableOpacity>
+                <ScrollView>
+                    <View style={localStyles.container}>
+                        <View style={[styles.row, styles.center]}>
+                            <TouchableOpacity
+                                onPress={() => this.changeAvatar()}>
+                                {!!profileStore.avatar && (
+                                    <FitImage
+                                        source={profileStore.avatar}
+                                        style={localStyles.avatar}
+                                    />
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                        <View>
+                            <FormField
+                                field={profileStore.form.$('name').bind()}
+                                error={profileStore.form.$('name').error}
+                            />
+                            <FormField
+                                field={profileStore.form.$('fullName').bind()}
+                                error={profileStore.form.$('fullName').error}
+                            />
+                            <FormField
+                                field={profileStore.form.$('bio').bind()}
+                                error={profileStore.form.$('bio').error}
+                                multiline
+                            />
+                            <FormField
+                                field={profileStore.form.$('email').bind()}
+                                error={profileStore.form.$('email').error}
+                            />
+                        </View>
                     </View>
-                    <View>
-                        <FormField
-                            field={profileStore.form.$('name').bind()}
-                            error={profileStore.form.$('name').error}
-                        />
-                        <FormField
-                            field={profileStore.form.$('fullName').bind()}
-                            error={profileStore.form.$('fullName').error}
-                        />
-                        <FormField
-                            field={profileStore.form.$('bio').bind()}
-                            error={profileStore.form.$('bio').error}
-                            multiline
-                        />
-                        <FormField
-                            field={profileStore.form.$('email').bind()}
-                            error={profileStore.form.$('email').error}
-                        />
-
-                        <Button
-                            onPress={profileStore.form.onSubmit}
-                            title="Submit"
-                        />
-                    </View>
-                </KeyboardAvoidingView>
+                </ScrollView>
             </TouchableWithoutFeedback>
         );
     }
