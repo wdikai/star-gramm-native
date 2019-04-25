@@ -1,8 +1,7 @@
 /** @format */
 
-import { action, observable, computed } from 'mobx';
+import { action, observable, computed, toJS, runInAction } from 'mobx';
 import Post from './post';
-import { runInAction } from 'mobx/lib/mobx';
 
 const timeout = time => new Promise(resolve => setTimeout(resolve, time));
 
@@ -30,6 +29,9 @@ export default class User {
         this.countFollowers = data.countFollowers || 0;
         this.countFollowings = data.countFollowings || 0;
         this.isFollow = data.isFollow || false;
+
+        this.posts = data.posts || [];
+        this.isPostsLoading = data.isPostsLoading || false;
 
         this.postService = services.postService;
     }
@@ -62,6 +64,7 @@ export default class User {
 
     @action
     async fetchPosts(offset = 0) {
+        if (this.isPostsLoading) return;
         this.isPostsLoading = true;
         const response = await this.postService.getUserPosts(
             this.id,
@@ -75,5 +78,24 @@ export default class User {
             this.posts.push(...posts);
             this.isPostsLoading = false;
         });
+    }
+
+    toJSON() {
+        return toJS(
+            {
+                id: this.id,
+                email: this.email,
+                name: this.name,
+                fullName: this.fullName,
+                avatar: this.avatar,
+                countFollowers: this.countFollowers,
+                countFollowings: this.countFollowings,
+                bio: this.bio,
+                isFollow: this.isFollow,
+                posts: this.posts,
+                isPostsLoading: this.isPostsLoading,
+            },
+            { recurseEverything: true }
+        );
     }
 }

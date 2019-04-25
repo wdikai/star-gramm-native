@@ -35,6 +35,10 @@ const localStyles = StyleSheet.create({
 
         borderBottomColor: 'lightgray',
     },
+    data: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
 });
 
 function UserListItem({ navigation, user }) {
@@ -42,18 +46,18 @@ function UserListItem({ navigation, user }) {
 
     return (
         <View style={[styles.row, localStyles.line]}>
-            <View style={[styles.row, styles.center, styles.col4]}>
-                <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={onPress} style={styles.col8}>
+                <View style={[styles.row, localStyles.data]}>
                     <FitImage
                         style={[styles.col4, localStyles.avatar]}
                         source={{ uri: user.avatar }}
                     />
-                </TouchableOpacity>
-                <Text style={[styles.col8]} onPress={onPress}>
-                    {user.name}
-                </Text>
-            </View>
-            <View>
+                    <Text style={styles.col8} onPress={onPress}>
+                        {user.name}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+            <View style={styles.col4}>
                 <FollowButton user={user} />
             </View>
         </View>

@@ -15,6 +15,8 @@ export default class Login extends Component {
         if (error || !result || result.isCancelled) {
             console.log('login has error: ' + error);
         } else {
+            console.log('login');
+            console.log(result);
             await this.setupAuth();
         }
     }
@@ -23,14 +25,16 @@ export default class Login extends Component {
         const data = await AccessToken.getCurrentAccessToken();
         if (data) {
             await AsyncStorage.setItem('userToken', data.accessToken);
-            this.props.navigation.navigate('Main');
+            this.props.navigation.navigate('App');
         }
     }
 
     render() {
         return (
             <View style={[styles.container, styles.center]}>
-                <LoginButton onLoginFinished={() => this.loggedIn()} />
+                <LoginButton
+                    onLoginFinished={(...args) => this.loggedIn(...args)}
+                />
             </View>
         );
     }

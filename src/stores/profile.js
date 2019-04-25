@@ -4,6 +4,7 @@ import { observable, action, runInAction } from 'mobx';
 import User from '../models/user';
 import { createFrom } from '../utils/createFrom';
 import { fields, options } from '../forms/profile';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export class ProfileStore {
     @observable user = null;
@@ -25,12 +26,22 @@ export class ProfileStore {
     }
 
     @action
+    init(user) {
+        console.log('user', user);
+        const { postService } = this;
+        if (!user || this.user || this.isLoading) return;
+
+        this.user = new User(user, { postService });
+        this.resetForm();
+    }
+
+    @action
     setAvatar(uri = this.user.avatar) {
         this.avatar = { uri };
     }
 
     @action
-    init() {
+    resetForm() {
         this.setAvatar();
         this.form.init({
             email: this.user.email,
@@ -52,7 +63,7 @@ export class ProfileStore {
                 this.user = new User(response, { postService });
             }
 
-            this.init();
+            this.resetForm();
             this.isLoading = false;
         });
     }

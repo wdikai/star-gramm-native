@@ -6,12 +6,21 @@ import { inject, observer } from 'mobx-react/native';
 
 import styles from '../styles/styles';
 import PostListItem from '../components/PostListItem';
+import FeedHeader from '../components/FeedHeader';
 
 @inject(stores => ({ feedStore: stores.root.feedStore }))
 @observer
 export default class Feed extends Component {
+    static navigationOptions() {
+        return {
+            headerTitle: <FeedHeader />,
+        };
+    }
+
     componentWillMount() {
-        this.props.feedStore.fetchPosts();
+        if (!this.props.feedStore.offset && !this.props.feedStore.isLoading) {
+            this.props.feedStore.fetchPosts();
+        }
     }
 
     render() {

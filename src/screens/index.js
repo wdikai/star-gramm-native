@@ -6,6 +6,7 @@ import {
     createSwitchNavigator,
     createStackNavigator,
 } from 'react-navigation';
+import { fromLeft, fromRight, fadeIn } from 'react-navigation-transitions';
 
 import Camera from './Camera';
 import PhotoCropper from './PhotoCropper';
@@ -28,57 +29,68 @@ const appNavigator = createSwitchNavigator(
                 Main: {
                     screen: createBottomTabNavigator(
                         {
-                            Home,
-                            Camera: {
-                                screen: createStackNavigator(
-                                    {
-                                        Camera: {
-                                            screen: Camera,
-                                            navigationOptions: {
-                                                header: null,
-                                            },
-                                        },
-                                        PhotoCropper,
-                                        PhotoPreview,
-                                        PostCreate,
-                                    },
-                                    {
-                                        initialRouteName: 'Camera',
-                                    }
-                                ),
-                                navigationOptions: {
-                                    tabBarVisible: false,
-                                },
-                            },
-                            Users: createStackNavigator(
-                                { Users, User, Post },
-                                { initialRouteName: 'Users' }
-                            ),
                             Feed: createStackNavigator(
                                 { Feed, User, Post },
                                 { initialRouteName: 'Feed' }
                             ),
+                            Users: createStackNavigator(
+                                { Users, User, Post },
+                                { initialRouteName: 'Users' }
+                            ),
                             Profile: createStackNavigator(
-                                {
-                                    Profile,
-                                    Post,
-                                    User,
-                                },
+                                { Profile, Post, User },
                                 { initialRouteName: 'Profile' }
                             ),
                         },
                         {
-                            initialRouteName: 'Profile',
+                            initialRouteName: 'Users',
                         }
                     ),
                     navigationOptions: {
                         header: null,
                     },
                 },
+                Camera: {
+                    screen: Camera,
+                    navigationOptions: {
+                        header: null,
+                    },
+                },
+                PhotoCropper,
+                PhotoPreview,
+                PostCreate,
                 EditProfile,
             },
             {
                 initialRouteName: 'Main',
+                transitionConfig: ({ scenes }) => {
+                    const screensWithoutTransition = [
+                        'PhotoCropper',
+                        'PhotoPreview',
+                        'PostCreate',
+                    ];
+                    const prewScene = scenes[scenes.length - 2];
+                    const nextScene = scenes[scenes.length - 1];
+
+                    if (
+                        (prewScene &&
+                            screensWithoutTransition.includes(
+                                prewScene.route.routeName
+                            )) ||
+                        (nextScene &&
+                            screensWithoutTransition.includes(
+                                nextScene.route.routeName
+                            ))
+                    ) {
+                        return fadeIn(100);
+                    }
+
+                    if (nextScene && nextScene.route.routeName === 'Camera') {
+                        return fromLeft(300);
+                    }
+
+                    return fromRight(300);
+                },
             }
         ),
         Splash,

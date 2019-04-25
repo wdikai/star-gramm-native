@@ -7,7 +7,8 @@ import { Text, TouchableHighlight, StyleSheet } from 'react-native';
 
 const innerStyles = StyleSheet.create({
     followButton: {
-        width: 150,
+        width: '100%',
+        maxWidth: 150,
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: '#c0c0c0',

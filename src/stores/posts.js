@@ -1,8 +1,9 @@
 /** @format */
 
 import { observable, action } from 'mobx';
+import { computed, runInAction } from 'mobx';
+
 import Post from '../models/post';
-import { computed, runInAction } from 'mobx/lib/mobx';
 
 export class PostsStore {
     @observable posts = [];
@@ -16,6 +17,13 @@ export class PostsStore {
     @computed
     get offset() {
         return this.posts.length;
+    }
+
+    @action
+    init(items) {
+        if (this.isLoading || this.posts.length) return;
+
+        this.posts = items.map(post => new Post(post));
     }
 
     @action
@@ -37,6 +45,7 @@ export class PostsStore {
 
     @action
     async fetchPosts(offset = 0) {
+        if (this.isLoading) return;
         this.isLoading = true;
         const response = await this.postService.getPosts(20, offset);
 

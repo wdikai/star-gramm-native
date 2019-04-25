@@ -12,7 +12,7 @@ export default class Splash extends Component {
 
     async checkAuth() {
         const userToken = await AsyncStorage.getItem('userToken');
-        this.props.navigation.navigate(userToken ? 'Main' : 'Login');
+        this.props.navigation.navigate(userToken ? 'App' : 'Login');
     }
 
     render() {

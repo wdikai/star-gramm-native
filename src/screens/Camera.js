@@ -46,18 +46,6 @@ const localStyles = StyleSheet.create({
 @inject(stores => ({ photoStore: stores.root.photoStore }))
 @observer
 export default class Camera extends Component {
-    componentDidMount() {
-        const { navigation, photoStore } = this.props;
-        navigation.addListener(
-            'willFocus',
-            action(() => (photoStore.focusedScreen = true))
-        );
-        navigation.addListener(
-            'willBlur',
-            action(() => (photoStore.focusedScreen = false))
-        );
-    }
-
     async takePicture() {
         if (this.camera) {
             const { photoStore, navigation } = this.props;
@@ -69,10 +57,8 @@ export default class Camera extends Component {
         }
     }
 
-    back() {
-        const { photoStore, navigation } = this.props;
-        photoStore.removeAllFiles();
-        navigation.navigate('Feed');
+    async componentWillUnmount() {
+        await this.props.photoStore.removeAllFiles();
     }
 
     render() {
@@ -87,7 +73,8 @@ export default class Camera extends Component {
                     {this.renderCamera()}
                 </View>
                 <View style={localStyles.backButton}>
-                    <TouchableOpacity onPress={() => this.back()}>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.goBack()}>
                         <Text style={localStyles.backButtonText}>Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -106,10 +93,8 @@ export default class Camera extends Component {
         const { photoStore } = this.props;
         if (!photoStore.hasCameraPermission) {
             return <Text>No access to camera</Text>;
-        } else if (photoStore.focusedScreen) {
-            return this.cameraView();
         } else {
-            return <View />;
+            return this.cameraView();
         }
     }
 

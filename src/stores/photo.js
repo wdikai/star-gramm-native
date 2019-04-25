@@ -11,7 +11,6 @@ export class PhotoStore {
     @observable from;
 
     @observable hasCameraPermission = true;
-    @observable focusedScreen = true;
 
     constructor({ postService }) {
         this.postService = postService;

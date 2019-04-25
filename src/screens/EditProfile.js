@@ -4,20 +4,21 @@ import React, { Component } from 'react';
 import {
     ScrollView,
     View,
-    Text,
     StyleSheet,
-    Button,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Alert,
     Keyboard,
+    Button,
 } from 'react-native';
 import { inject, observer } from 'mobx-react/native';
 import ImagePicker from 'react-native-image-picker';
 
 import styles from '../styles/styles';
+import logout from '../actions/logout';
 import FitImage from '../components/FitImage';
 import FormField from '../components/FormField';
+import EditProfileHeader from '../components/EditProfileHeader';
 
 const localStyles = StyleSheet.create({
     container: {
@@ -30,46 +31,24 @@ const localStyles = StyleSheet.create({
         width: 50,
         height: 50,
     },
-    headerContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingRight: 15,
-    },
-    headerText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-    },
 });
-
-function Header({ onSubmit }) {
-    return (
-        <View style={localStyles.headerContainer}>
-            <Text style={localStyles.headerText}>Edit Profile</Text>
-            <Button onPress={onSubmit} title="Save" />
-        </View>
-    );
-}
 
 @inject(stores => ({ profileStore: stores.root.profileStore }))
 @observer
 export default class EditProfile extends Component {
     static navigationOptions({ navigation }) {
         return {
-            headerTitle: <Header onSubmit={navigation.getParam('onSubmit')} />,
+            headerTitle: (
+                <EditProfileHeader
+                    profileStore={navigation.getParam('profileStore')}
+                />
+            ),
         };
     }
 
     componentWillMount() {
         const { navigation, profileStore } = this.props;
-        navigation.setParams({
-            onSubmit: event => {
-                profileStore.form.onSubmit(event);
-                navigation.goBack();
-            },
-        });
+        navigation.setParams({ profileStore });
         profileStore.fetchProfile();
     }
 
@@ -93,7 +72,7 @@ export default class EditProfile extends Component {
     }
 
     render() {
-        const profileStore = this.props.profileStore;
+        const { profileStore, navigation } = this.props;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView>
@@ -128,6 +107,11 @@ export default class EditProfile extends Component {
                                 error={profileStore.form.$('email').error}
                             />
                         </View>
+
+                        <Button
+                            title="Logout"
+                            onPress={() => logout(navigation)}
+                        />
                     </View>
                 </ScrollView>
             </TouchableWithoutFeedback>

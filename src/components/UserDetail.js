@@ -14,7 +14,6 @@ import { observer } from 'mobx-react/native';
 
 import FitImage from './FitImage';
 import Grid from './Grid';
-import FollowButton from './FollowButton';
 import UserPostsGrid from './UserPostsGrid';
 import UserPostsList from './UserPostsList';
 
@@ -61,21 +60,24 @@ class UserDetail extends Component {
 
     componentWillMount() {
         const { user } = this.props;
-        user.fetchPosts();
+        if (!user.isPostsLoading && !user.posts.length) {
+            user.fetchPosts();
+        }
     }
 
     render() {
-        const { user } = this.props;
+        const { user, renderAction } = this.props;
 
         return (
             <View style={[styles.column, innerStyles.scene]}>
                 <View style={[innerStyles.profileSection]}>
                     <View style={[styles.row, styles.spaceBetween]}>
                         <FitImage
-                            style={innerStyles.avatar}
+                            style={[innerStyles.avatar]}
                             source={{ uri: user.avatar }}
                         />
-                        <View style={[styles.column, styles.center]}>
+                        <View
+                            style={[styles.column, styles.center, styles.col5]}>
                             <View style={[styles.row]}>
                                 <View
                                     style={[
@@ -99,7 +101,7 @@ class UserDetail extends Component {
                             </View>
 
                             <View style={[styles.row]}>
-                                {this.renderActions()}
+                                {renderAction({ user })}
                             </View>
                         </View>
                     </View>
@@ -117,23 +119,6 @@ class UserDetail extends Component {
                 />
             </View>
         );
-    }
-
-    renderActions() {
-        const { user, isMe } = this.props;
-
-        if (isMe) {
-            return (
-                <TouchableHighlight
-                    style={innerStyles.editButton}
-                    onPress={() =>
-                        this.props.navigation.navigate('EditProfile')
-                    }>
-                    <Text>Edit profile</Text>
-                </TouchableHighlight>
-            );
-        }
-        return <FollowButton user={user} />;
     }
 
     renderScene({ route }) {

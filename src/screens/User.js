@@ -6,6 +6,7 @@ import { inject, observer } from 'mobx-react/native';
 
 import styles from '../styles/styles';
 import UserDetail from '../components/UserDetail';
+import FollowButton from '../components/FollowButton';
 
 @inject(stores => ({ userStore: stores.root.userStore }))
 @observer
@@ -31,9 +32,16 @@ export default class User extends Component {
         return (
             <View style={styles.container}>
                 {userStore.currentUser && (
-                    <UserDetail user={userStore.currentUser} />
+                    <UserDetail
+                        user={userStore.currentUser}
+                        renderAction={this.renderAction}
+                    />
                 )}
             </View>
         );
+    }
+
+    renderAction({ user }) {
+        return <FollowButton user={user} />;
     }
 }
