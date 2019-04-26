@@ -1,15 +1,10 @@
 /** @format */
 
 import React, { Component } from 'react';
-import {
-    View,
-    Text,
-    TouchableHighlight,
-    StyleSheet,
-    Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
 import { withNavigation } from 'react-navigation';
+import { CollapsibleHeaderScrollView } from 'react-native-collapsible-header-views';
 import { observer } from 'mobx-react/native';
 
 import FitImage from './FitImage';
@@ -22,6 +17,7 @@ import styles from '../styles/styles';
 const innerStyles = StyleSheet.create({
     profileSection: {
         padding: 10,
+        height: 300,
         borderColor: 'lightgray',
         borderBottomWidth: 0.5,
     },
@@ -66,58 +62,69 @@ class UserDetail extends Component {
     }
 
     render() {
-        const { user, renderAction } = this.props;
-
         return (
-            <View style={[styles.column, innerStyles.scene]}>
-                <View style={[innerStyles.profileSection]}>
-                    <View style={[styles.row, styles.spaceBetween]}>
-                        <FitImage
-                            style={[innerStyles.avatar]}
-                            source={{ uri: user.avatar }}
-                        />
-                        <View
-                            style={[styles.column, styles.center, styles.col5]}>
-                            <View style={[styles.row]}>
-                                <View
-                                    style={[
-                                        styles.column,
-                                        styles.center,
-                                        innerStyles.counter,
-                                    ]}>
-                                    <Text>{user.countFollowers}</Text>
-                                    <Text>Followers</Text>
-                                </View>
+            <CollapsibleHeaderScrollView
+                CollapsibleHeaderComponent={this.renderProfile()}
+                headerHeight={300}>
+                {this.renderTabs()}
+            </CollapsibleHeaderScrollView>
+        );
+    }
 
-                                <View
-                                    style={[
-                                        styles.column,
-                                        styles.center,
-                                        innerStyles.counter,
-                                    ]}>
-                                    <Text>{user.countFollowings}</Text>
-                                    <Text>Followings</Text>
-                                </View>
+    renderProfile() {
+        const { user, renderAction } = this.props;
+        return (
+            <View style={[innerStyles.profileSection]}>
+                <View style={[styles.row, styles.spaceBetween]}>
+                    <FitImage
+                        style={[innerStyles.avatar]}
+                        source={{ uri: user.avatar }}
+                    />
+                    <View style={[styles.column, styles.center, styles.col5]}>
+                        <View style={[styles.row]}>
+                            <View
+                                style={[
+                                    styles.column,
+                                    styles.center,
+                                    innerStyles.counter,
+                                ]}>
+                                <Text>{user.countFollowers}</Text>
+                                <Text>Followers</Text>
                             </View>
 
-                            <View style={[styles.row]}>
-                                {renderAction({ user })}
+                            <View
+                                style={[
+                                    styles.column,
+                                    styles.center,
+                                    innerStyles.counter,
+                                ]}>
+                                <Text>{user.countFollowings}</Text>
+                                <Text>Followings</Text>
                             </View>
                         </View>
-                    </View>
-                    <View style={[styles.column]}>
-                        <Text>{user.name}</Text>
-                        <Text>{user.bio}</Text>
+
+                        <View style={[styles.row]}>
+                            {renderAction({ user })}
+                        </View>
                     </View>
                 </View>
-                <TabView
-                    navigationState={this.state}
-                    renderScene={props => this.renderScene(props)}
-                    onIndexChange={index => this.setState({ index })}
-                    initialLayout={{ width: Dimensions.get('window').width }}
-                    style={{ height: Dimensions.get('window').height }}
-                />
+                <View style={[styles.column]}>
+                    <Text>{user.name}</Text>
+                    <Text>{user.bio}</Text>
+                </View>
             </View>
+        );
+    }
+
+    renderTabs() {
+        return (
+            <TabView
+                navigationState={this.state}
+                renderScene={props => this.renderScene(props)}
+                onIndexChange={index => this.setState({ index })}
+                initialLayout={{ width: Dimensions.get('window').width }}
+                style={{ height: Dimensions.get('window').height - 100 }}
+            />
         );
     }
 

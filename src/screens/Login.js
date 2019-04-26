@@ -2,10 +2,15 @@
 
 import React, { Component } from 'react';
 import { View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
 import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import { inject, observer } from 'mobx-react/native';
+
 import styles from '../styles/styles';
 
+@inject(stores => ({ rootStore: stores.root }))
+@observer
 export default class Login extends Component {
     async componentDidMount() {
         await this.setupAuth();
@@ -25,6 +30,7 @@ export default class Login extends Component {
         const data = await AccessToken.getCurrentAccessToken();
         if (data) {
             await AsyncStorage.setItem('userToken', data.accessToken);
+            await this.props.rootStore.init();
             this.props.navigation.navigate('App');
         }
     }
@@ -32,6 +38,9 @@ export default class Login extends Component {
     render() {
         return (
             <View style={[styles.container, styles.center]}>
+                <Icon name="star" size={64}>
+                    Gramm
+                </Icon>
                 <LoginButton
                     onLoginFinished={(...args) => this.loggedIn(...args)}
                 />

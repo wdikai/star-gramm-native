@@ -1,18 +1,19 @@
 /** @format */
 
+import React from 'react';
 import {
     createAppContainer,
     createBottomTabNavigator,
-    createSwitchNavigator,
     createStackNavigator,
 } from 'react-navigation';
+import createAnimatedSwitchNavigator from 'react-navigation-animated-switch';
+import { Transition } from 'react-native-reanimated';
 import { fromLeft, fromRight, fadeIn } from 'react-navigation-transitions';
 
 import Camera from './Camera';
 import PhotoCropper from './PhotoCropper';
 import PhotoPreview from './PhotoPreview';
 import PostCreate from './PostCreate';
-import Home from './Home';
 import User from './User';
 import Users from './Users';
 import Feed from './Feed';
@@ -22,7 +23,9 @@ import Profile from './Profile';
 import EditProfile from './EditProfile';
 import Splash from './Splash';
 
-const appNavigator = createSwitchNavigator(
+import defaultNavigationOptions from '../components/tabsBarIcons';
+
+const appNavigator = createAnimatedSwitchNavigator(
     {
         App: createStackNavigator(
             {
@@ -43,7 +46,13 @@ const appNavigator = createSwitchNavigator(
                             ),
                         },
                         {
-                            initialRouteName: 'Users',
+                            initialRouteName: 'Feed',
+                            tabBarOptions: {
+                                activeTintColor: 'tomato',
+                                inactiveTintColor: 'gray',
+                                showLabel: false,
+                            },
+                            defaultNavigationOptions,
                         }
                     ),
                     navigationOptions: {
@@ -98,6 +107,12 @@ const appNavigator = createSwitchNavigator(
     },
     {
         initialRouteName: 'Splash',
+        transition: (
+            <Transition.Together>
+                <Transition.Out type="fade" durationMs={400} />
+                <Transition.In type="fade" durationMs={500} />
+            </Transition.Together>
+        ),
     }
 );
 

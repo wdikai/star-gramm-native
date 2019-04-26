@@ -21,7 +21,11 @@ import { PostService } from '../services/PostService';
 configure({ enforceActions: 'observed' });
 
 export default class RootStore {
-    @observable ready = false;
+    @observable isAuthorized = false;
+
+    feedSubscription = null;
+    userSubscription = null;
+    userPostsSubscription = null;
 
     constructor() {
         const userService = new UserService();
@@ -35,23 +39,32 @@ export default class RootStore {
 
     @action
     async init() {
-        const [feed, user] = await Promise.all([
-            AsyncStorage.getItem('feed'),
-            AsyncStorage.getItem('profile'),
-        ]);
+        const sessionToken = await AsyncStorage.getItem('userToken');
+        if (sessionToken) {
+            const [feed, user] = await Promise.all([
+                AsyncStorage.getItem('feed'),
+                AsyncStorage.getItem('profile'),
+            ]);
 
-        this.feedStore.init(JSON.parse(feed));
-        this.profileStore.init(JSON.parse(user));
+            this.feedStore.init(JSON.parse(feed) || []);
+            this.profileStore.init(JSON.parse(user));
 
-        reaction(() => this.feedStore.posts.length, () => this.saveFeed());
-
-        reaction(() => this.profileStore.user, () => this.saveProfile());
-        reaction(
-            () => this.profileStore.user.posts.length,
-            () => this.saveProfile()
-        );
-
-        runInAction(() => (this.ready = true));
+            this.feedSubscription = reaction(
+                () => this.feedStore.posts.length,
+                () => this.saveFeed()
+            );
+            this.userSubscription = reaction(
+                () => this.profileStore.user,
+                () => this.saveProfile()
+            );
+            if (this.profileStore.user) {
+                this.userPostsSubscription = reaction(
+                    () => this.profileStore.user.posts.length,
+                    () => this.saveProfile()
+                );
+            }
+            runInAction(() => (this.isAuthorized = true));
+        }
     }
 
     saveFeed() {
@@ -60,8 +73,19 @@ export default class RootStore {
     }
 
     saveProfile() {
+        if (!this.profileStore.user) {
+            return AsyncStorage.removeItem('profile');
+        }
+
         const profile = this.profileStore.user.toJSON();
         profile.posts = profile.posts.slice(0, 40);
         AsyncStorage.setItem('profile', JSON.stringify(profile));
+
+        if (!this.userPostsSubscription) {
+            this.userPostsSubscription = reaction(
+                () => this.profileStore.user.posts.length,
+                () => this.saveProfile()
+            );
+        }
     }
 }
