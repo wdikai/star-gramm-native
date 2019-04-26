@@ -1,16 +1,18 @@
 /** @format */
 
 import React from 'react';
-import { View, Button } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { withNavigation } from 'react-navigation';
 
 function FeedHeader({ navigation }) {
     return (
         <View>
-            <Button
-                title="Make photo"
+            <TouchableOpacity
                 onPress={() => navigation.navigate('Camera')}
-            />
+                style={{ marginLeft: 20 }}>
+                <Icon name="camera" size={20} />
+            </TouchableOpacity>
         </View>
     );
 }

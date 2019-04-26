@@ -28,8 +28,10 @@ const localStyles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     avatar: {
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        overflow: 'hidden',
     },
 });
 
@@ -79,12 +81,10 @@ export default class EditProfile extends Component {
                     <View style={localStyles.container}>
                         <View style={[styles.row, styles.center]}>
                             <TouchableOpacity
+                                style={localStyles.avatar}
                                 onPress={() => this.changeAvatar()}>
                                 {!!profileStore.avatar && (
-                                    <FitImage
-                                        source={profileStore.avatar}
-                                        style={localStyles.avatar}
-                                    />
+                                    <FitImage source={profileStore.avatar} />
                                 )}
                             </TouchableOpacity>
                         </View>

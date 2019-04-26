@@ -1,10 +1,9 @@
 /** @format */
 
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, computed, runInAction } from 'mobx';
 import User from '../models/user';
 import { createFrom } from '../utils/createFrom';
 import { fields, options } from '../forms/profile';
-import AsyncStorage from '@react-native-community/async-storage';
 
 export class ProfileStore {
     @observable user = null;
@@ -12,6 +11,8 @@ export class ProfileStore {
 
     @observable avatar = null;
     @observable form = null;
+    @observable isAvatarChanged = false;
+    @observable isSubmitting = false;
 
     constructor({ userService, postService }) {
         this.userService = userService;
@@ -25,9 +26,15 @@ export class ProfileStore {
         });
     }
 
+    @computed
+    get hasChanges() {
+        return (
+            (this.isAvatarChanged || this.form.changed) && !this.isSubmitting
+        );
+    }
+
     @action
     init(user) {
-        console.log('user', user);
         const { postService } = this;
         if (!user || this.user || this.isLoading) return;
 
@@ -38,10 +45,12 @@ export class ProfileStore {
     @action
     setAvatar(uri = this.user.avatar) {
         this.avatar = { uri };
+        this.isAvatarChanged = uri !== this.user.avatar;
     }
 
     @action
     resetForm() {
+        this.isSubmitting = false;
         this.setAvatar();
         this.form.init({
             email: this.user.email,
@@ -74,7 +83,9 @@ export class ProfileStore {
             ...form.values(),
             avatar: this.avatar.uri,
         };
+        this.isSubmitting = true;
         await this.updateProfile(data);
+        this.resetForm();
     }
 
     @action

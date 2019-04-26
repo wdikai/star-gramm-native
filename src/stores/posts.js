@@ -20,8 +20,8 @@ export class PostsStore {
     }
 
     @action
-    init(items) {
-        if (this.isLoading || this.posts.length) return;
+    init(items = []) {
+        if (this.isLoading || this.posts.length || !items.length) return;
 
         this.posts = items.map(post => new Post(post));
     }

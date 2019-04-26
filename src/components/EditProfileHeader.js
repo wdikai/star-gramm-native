@@ -1,7 +1,14 @@
 /** @format */
 
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ActivityIndicator,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { observer } from 'mobx-react/native';
 
 const localStyles = StyleSheet.create({
@@ -23,8 +30,13 @@ function EditProfileHeader({ profileStore }) {
     return (
         <View style={localStyles.headerContainer}>
             <Text style={localStyles.headerText}>Edit Profile</Text>
-            {!!profileStore && profileStore.form.changed && (
-                <Button onPress={profileStore.onSubmit} title="Save" />
+            {!!profileStore && profileStore.hasChanges && (
+                <TouchableOpacity onPress={profileStore.form.onSubmit}>
+                    <Icon name="check" size={20} />
+                </TouchableOpacity>
+            )}
+            {!!profileStore && profileStore.isSubmitting && (
+                <ActivityIndicator />
             )}
         </View>
     );

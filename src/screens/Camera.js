@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { observer, inject } from 'mobx-react/native';
-import { action } from 'mobx';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { RNCamera } from 'react-native-camera';
 
 import styles from '../styles/styles';
@@ -14,12 +14,6 @@ const localStyles = StyleSheet.create({
         top: 15,
         left: 15,
     },
-    backButtonText: {
-        color: 'white',
-        textShadowColor: 'black',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 10,
-    },
     cameraView: {
         width: '100%',
         height: '100%',
@@ -27,19 +21,24 @@ const localStyles = StyleSheet.create({
     },
     takePicture: {
         position: 'absolute',
-        bottom: 0,
+        bottom: 50,
         flex: 0,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'center',
     },
     takePictureButton: {
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        padding: 15,
-        paddingHorizontal: 20,
         alignSelf: 'center',
-        margin: 20,
+    },
+    buttonShadow: {
+        color: 'white',
+        textShadowColor: 'black',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 10,
+        padding: 10,
+
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
 });
 
@@ -75,14 +74,22 @@ export default class Camera extends Component {
                 <View style={localStyles.backButton}>
                     <TouchableOpacity
                         onPress={() => this.props.navigation.goBack()}>
-                        <Text style={localStyles.backButtonText}>Back</Text>
+                        <Icon
+                            name="arrow-left"
+                            size={20}
+                            style={localStyles.buttonShadow}
+                        />
                     </TouchableOpacity>
                 </View>
                 <View style={localStyles.takePicture}>
                     <TouchableOpacity
                         onPress={() => this.takePicture()}
                         style={localStyles.takePictureButton}>
-                        <Text style={{ fontSize: 14 }}> SNAP </Text>
+                        <Icon
+                            style={localStyles.buttonShadow}
+                            name="circle-thin"
+                            size={80}
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
