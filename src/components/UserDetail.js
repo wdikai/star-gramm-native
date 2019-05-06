@@ -1,10 +1,9 @@
 /** @format */
 
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { Component, createRef } from 'react';
+import { View, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
 import { TabView } from 'react-native-tab-view';
 import { withNavigation } from 'react-navigation';
-import { CollapsibleHeaderScrollView } from 'react-native-collapsible-header-views';
 import { observer } from 'mobx-react/native';
 
 import FitImage from './FitImage';
@@ -43,16 +42,34 @@ const innerStyles = StyleSheet.create({
     },
 });
 
+const columns = {
+    GRID: {
+        key: 'grid',
+        title: 'Grid',
+    },
+    LIST: {
+        key: 'list',
+        title: 'List',
+    },
+};
+
+const componentsByColumn = {
+    [columns.GRID.key]: UserPostsGrid,
+    [columns.LIST.key]: UserPostsList,
+};
+
 @withNavigation
 @observer
 class UserDetail extends Component {
-    state = {
-        index: 0,
-        routes: [
-            { key: 'grid', title: 'Grid' },
-            { key: 'list', title: 'List' },
-        ],
-    };
+    constructor(props) {
+        super(props);
+
+        this.scrollViewRef = createRef();
+        this.state = {
+            index: 0,
+            routes: [columns.GRID, columns.LIST],
+        };
+    }
 
     componentWillMount() {
         const { user } = this.props;
@@ -63,11 +80,10 @@ class UserDetail extends Component {
 
     render() {
         return (
-            <CollapsibleHeaderScrollView
-                CollapsibleHeaderComponent={this.renderProfile()}
-                headerHeight={300}>
+            <ScrollView ref={this.scrollViewRef}>
+                {this.renderProfile()}
                 {this.renderTabs()}
-            </CollapsibleHeaderScrollView>
+            </ScrollView>
         );
     }
 
@@ -119,28 +135,33 @@ class UserDetail extends Component {
     renderTabs() {
         return (
             <TabView
+                timingConfig={{ duration: 10 }}
+                swipeEnabled={false}
                 navigationState={this.state}
                 renderScene={props => this.renderScene(props)}
-                onIndexChange={index => this.setState({ index })}
+                onIndexChange={index => this.changeColumn(index)}
                 initialLayout={{ width: Dimensions.get('window').width }}
-                style={{ height: Dimensions.get('window').height - 100 }}
+                sceneContainerStyle={{
+                    height: Dimensions.get('window').height - 180,
+                }}
             />
         );
     }
 
+    changeColumn(index) {
+        this.scrollViewRef.current.scrollToEnd({ animated: true });
+        this.setState({ index });
+    }
+
     renderScene({ route }) {
+        let Component = componentsByColumn[route.key];
         const { user } = this.props;
 
         if (!user) return null;
 
-        switch (route.key) {
-            case 'grid':
-                return <UserPostsGrid user={user} />;
-            case 'list':
-                return <UserPostsList user={user} />;
-            default:
-                return null;
-        }
+        return !Component ? null : (
+            <Component user={user} nestedScrollEnabled={false} />
+        );
     }
 }
 

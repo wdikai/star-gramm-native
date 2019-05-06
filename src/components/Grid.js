@@ -14,6 +14,8 @@ class Grid extends Component {
             onEndReached,
             onEndReachedThreshold,
             horizontal,
+            nestedScrollEnabled,
+            onScroll,
         } = this.props;
         const rows = this.chunkArray(data, itemsPerRow);
 
@@ -23,8 +25,10 @@ class Grid extends Component {
                 data={rows}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
+                onScroll={onScroll}
                 onEndReached={onEndReached}
                 onEndReachedThreshold={onEndReachedThreshold}
+                nestedScrollEnabled={nestedScrollEnabled}
                 keyExtractor={(_, index) => `row_${index}`}
                 renderItem={({ item }) => this.renderRow(item)}
             />

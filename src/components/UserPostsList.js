@@ -11,7 +11,7 @@ import styles from '../styles/styles';
 @observer
 class UserPostsList extends Component {
     render() {
-        const { user } = this.props;
+        const { user, nestedScrollEnabled, onScroll } = this.props;
         return (
             <View style={[styles.container]}>
                 <FlatList
@@ -20,6 +20,8 @@ class UserPostsList extends Component {
                     onRefresh={() => user.fetchPosts()}
                     onEndReached={() => user.fetchPosts(user.offset)}
                     onEndReachedThreshold={1}
+                    onScroll={onScroll}
+                    nestedScrollEnabled={nestedScrollEnabled}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) => <PostListItem post={item} />}
                 />

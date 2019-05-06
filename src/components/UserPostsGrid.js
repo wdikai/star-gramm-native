@@ -14,7 +14,7 @@ import styles from '../styles/styles';
 @observer
 class UserPostsGrid extends Component {
     render() {
-        const { user, navigation } = this.props;
+        const { user, navigation, onScroll, nestedScrollEnabled } = this.props;
 
         return (
             <View style={[styles.container]}>
@@ -25,7 +25,9 @@ class UserPostsGrid extends Component {
                     onRefresh={() => user.fetchPosts()}
                     onEndReached={() => user.fetchPosts(user.offset)}
                     onEndReachedThreshold={0.5}
+                    onScroll={onScroll}
                     keyExtractor={item => item.id.toString()}
+                    nestedScrollEnabled={nestedScrollEnabled}
                     renderItem={({ item }) => (
                         <TouchableOpacity
                             onPress={() =>
