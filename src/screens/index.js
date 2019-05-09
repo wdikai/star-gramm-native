@@ -22,6 +22,7 @@ import Login from './Login';
 import Profile from './Profile';
 import EditProfile from './EditProfile';
 import Splash from './Splash';
+import Test from './Test';
 
 import defaultNavigationOptions from '../components/tabsBarIcons';
 
@@ -44,9 +45,10 @@ const appNavigator = createAnimatedSwitchNavigator(
                                 { Profile, Post, User },
                                 { initialRouteName: 'Profile' }
                             ),
+                            Test,
                         },
                         {
-                            initialRouteName: 'Feed',
+                            initialRouteName: 'Test',
                             tabBarOptions: {
                                 activeTintColor: 'tomato',
                                 inactiveTintColor: 'gray',
